@@ -12,8 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import model.Appointment;
+import model.AppointmentFacade;
 import model.CounterStaff;
 import model.Customer;
+import model.Feedback;
+import model.FeedbackFacade;
 import model.Manager;
 import model.Technician;
 import model.User;
@@ -28,6 +33,12 @@ public class LoginServlet extends HttpServlet {
 // This injects your Business Tier (EJB) into the Presentation Tier (Servlet)
     @EJB
     private UserFacade userFacade;
+    
+    @EJB
+    private AppointmentFacade AppointmentFacade;
+    
+    @EJB
+    private FeedbackFacade FeedbackFacade;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -56,7 +67,6 @@ public class LoginServlet extends HttpServlet {
                 // Success! Create a session and save the user data
                 HttpSession session = request.getSession();
                 session.setAttribute("currentUser", user);
-                
                 // Set a "Welcome" pop-up for when they arrive at their dashboard!
                 session.setAttribute("popupMessage", "Welcome back, " + user.getFullName() + "!");
                 session.setAttribute("popupType", "success");
@@ -69,7 +79,18 @@ public class LoginServlet extends HttpServlet {
                 } else if (user instanceof Technician) {
                     response.sendRedirect("technician_dashboard.jsp");
                 } else if (user instanceof Customer) {
+                    
+                    Customer customer = (Customer) user;
+                    
+                    // 1. PRE-LOAD DATA FOR THE DASHBOARD TABS
+                    List<Appointment> historyList = AppointmentFacade.getAppointmentsByCustomer(customer);
+                    List<Feedback> feedbackList = FeedbackFacade.getFeedbackByCustomer(customer);
+                    
+                    // 2. SAVE THE LISTS TO THE SESSION
+                    session.setAttribute("historyList", historyList);
+                    session.setAttribute("feedbackList", feedbackList);
                     response.sendRedirect("customer_dashboard.jsp");
+                    
                 } else {
                     // Fallback for missing roles
                     session.setAttribute("popupMessage", "Login Error: Unknown User Role.");

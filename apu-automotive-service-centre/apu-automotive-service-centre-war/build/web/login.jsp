@@ -5,6 +5,8 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="zxx">
     <!--<< Header Area >>-->
@@ -151,17 +153,12 @@
         Check if the Servlet left a pop-up message for us in the session.
         If it did, trigger a JavaScript alert and then delete the message so it doesn't repeat.
         --%>
-        <%
-            String popupMessage = (String) request.getSession().getAttribute("popupMessage");
-            if (popupMessage != null) {
-        %> 
-        <script> alert("<%= popupMessage%>"); </script>
-        <%
-                // Clear the message from the session
-                request.getSession().removeAttribute("popupMessage");
-                request.getSession().removeAttribute("popupType");
-            }
-        %>
+        <c:if test="${not empty sessionScope.popupMessage}">
+            <script> alert("${sessionScope.popupMessage}"); </script>
+            <%-- Clear the messages from the session --%>
+            <c:remove var="popupMessage" scope="session" />
+            <c:remove var="popupType" scope="session" />
+        </c:if>
     </body>
 
 </html>

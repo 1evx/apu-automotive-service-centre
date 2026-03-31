@@ -21,7 +21,8 @@
                     <div class="main-header-items">
                         <div class="header-top-wrapper-2">
                             <div class="text-white top-text">Welcome To Asia Pacific University</div>
-                            <div class="text-white top-text"><i class="fa-solid fa-location-dot me-3"></i> Jalan Teknologi 5, Taman Teknologi Malaysia, Kuala Lumpur</div>
+                                    <div class="text-white top-text"><i class="fa-solid fa-location-dot me-3">
+                                </i> Jalan Teknologi 5, Taman Teknologi Malaysia, Kuala Lumpur</div>
                             <div class="social-icon d-flex align-items-center">
                                 <span class="text-white top-text">Follow Us:</span>
                                 <a href="#"><i class="fab fa-facebook-f"></i></a>

@@ -29,7 +29,7 @@ public class UserFacade extends AbstractFacade<User> {
         super(User.class);
     }
     
-    public boolean emailExists(String email) {
+       public boolean emailExists(String email) {
         try {
             // We use COUNT to see how many users have this exact email
             String jpql = "SELECT COUNT(u) FROM User u WHERE u.email = :email";
@@ -78,4 +78,5 @@ public class UserFacade extends AbstractFacade<User> {
             return null;
         }
     }
+    
 }

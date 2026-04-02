@@ -12,8 +12,10 @@ import javax.persistence.Entity;
  * @author TPY
  */
 @Entity
-@DiscriminatorValue("CounterStaff") // Insert "CUSTOMER" into the 'role' column when saving this object
+@DiscriminatorValue("COUNTERSTAFF")
 public class CounterStaff extends User{
+    
+    private String shiftType;
     
     public CounterStaff() {
         super();
@@ -21,6 +23,14 @@ public class CounterStaff extends User{
 
     public CounterStaff(String email, String passwordHash, String role, String fullName, String phoneNumber) {
         super(email, passwordHash, role, fullName, phoneNumber);
+    }
+    
+    public String getShiftType() {
+        return shiftType;
+    }
+
+    public void setShiftType(String shiftType) {
+        this.shiftType = shiftType;
     }
     
 }

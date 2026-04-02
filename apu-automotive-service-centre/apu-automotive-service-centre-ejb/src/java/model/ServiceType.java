@@ -13,39 +13,38 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SERVICE_TYPE", schema = "APP") // Forces it into the correct schema
+@Table(name = "SERVICE_TYPE", schema = "APP")
 public class ServiceType implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+private static final long serialVersionUID = 1L;
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id; // Changed to Long for proper Auto-Generation
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name; // e.g., "Oil Change", "Full Engine Diagnostic"
+    private String name;
 
     @Column(length = 500)
-    private String description; // Details about what the service includes
+    private String description;
 
     @Column(nullable = false)
-    private Double price; // The base cost of this service
+    private Double price;
+    
+    // NEW FIELD ADDED HERE
+    @Column(nullable = false)
+    private Integer durationHours;
 
-    // ==========================================
-    // CONSTRUCTORS
-    // ==========================================
     public ServiceType() {
     }
 
-    public ServiceType(String name, String description, Double price) {
+    public ServiceType(String name, String description, Double price, Integer durationHours) {
         this.name = name;
         this.description = description;
         this.price = price;
+        this.durationHours = durationHours;
     }
 
-    // ==========================================
-    // GETTERS AND SETTERS
-    // ==========================================
     public Long getId() {
         return id;
     }
@@ -78,9 +77,15 @@ public class ServiceType implements Serializable {
         this.price = price;
     }
 
-    // ==========================================
-    // DEFAULT JPA METHODS
-    // ==========================================
+    // NEW GETTER AND SETTER
+    public Integer getDurationHours() {
+        return durationHours;
+    }
+
+    public void setDurationHours(Integer durationHours) {
+        this.durationHours = durationHours;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;

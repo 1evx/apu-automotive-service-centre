@@ -442,50 +442,22 @@
                             
                             -->
                             
-                            
                             <!-- Business Report Block -->
                             <div id="dashboard-home" class="dashboard-section">
-                                <div class="single-sidebar-widget mb-4">
+                                <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
                                     
-                                    <div class="sort-bar">
-                                        <div class="row g-sm-0 gy-20 justify-content-between align-items-center">
-                                            
-                                            <div class="col-md">
-                                                <h4 class="widget-title"><i class="fa-solid fa-chart-pie me-2"></i> System Overview</h4>
-                                            </div>
+                                    <div class="card-header bg-white p-4 pb-0 d-flex justify-content-between align-items-center border-bottom">   
+                                
+                                        <div class="sort-bar">
+                                            <div class="row g-sm-0 gy-20 justify-content-between align-items-center">
 
-                                            <!-- Drop Down For Sorting -->
-                                            <div class="col-md-auto">
-                                                <form class="woocommerce-ordering" method="get">
-                                                    <select name="orderby" class="single-select" aria-label="Shop order">
-                                                        <option value="menu_order" selected="selected">Default Sorting</option>
-                                                        <option value="popularity">Sort by popularity</option>
-                                                        <option value="rating">Sort by average rating</option>
-                                                        <option value="date">Sort by latest</option>
-                                                        <option value="price">Sort by price: low to high</option>
-                                                        <option value="price-desc">Sort by price: high to low</option>
-                                                    </select>
-                                                </form>
-                                            </div>
-
-                                            <!-- Switch Layout Icon -->
-                                            <div class="col-md-auto">
-                                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link active" id="pills-grid-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-grid" type="button" role="tab"
-                                                            aria-controls="pills-grid" aria-selected="true"><i
-                                                                class="fa-solid fa-grid"></i></button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="pills-list-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-list" type="button" role="tab"
-                                                            aria-controls="pills-list" aria-selected="false"><i
-                                                                class="fa-solid fa-list"></i></button>
-                                                    </li>
-                                                </ul>
+                                                <div class="col-md">
+                                                    <h4 class="widget-title"><i class="fa-solid fa-chart-pie me-2"></i> System Overview</h4>
+                                                </div>
+                                                
                                             </div>
                                         </div>
+                                        
                                     </div>
                                     
                                     <div class="row text-center mt-4">
@@ -510,11 +482,12 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                        
                                     <div class="mt-4 p-4 border rounded text-center">
                                         <i class="fa-solid fa-chart-line fa-3x text-muted mb-3 opacity-50"></i>
                                         <h5 class="text-muted">Financial charts will appear here</h5>
                                     </div>
+                                    
                                 </div>
                             </div>
 
@@ -528,30 +501,11 @@
                                         </div>
                                         
                                         <div class="col-md-auto">
-                                            <button class="btn btn-primary fw-bold p-3 mb-3" data-bs-toggle="modal" 
+                                            <button class="btn btn-primary fw-bold p-2 mb-3" data-bs-toggle="modal" 
                                                     data-bs-target="#registerStaffModal">
                                                 <i class="fa-solid fa-user-plus me-2"></i> Add Staff
                                             </button>
-                                        </div>
-                                        
-                                        <!-- Layout Switch Button -->
-                                        <div class="col-md-auto ms-3">
-                                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link active" id="pills-grid-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-grid" type="button" role="tab"
-                                                            aria-controls="pills-grid" aria-selected="true"><i
-                                                            class="fa-solid fa-grid"></i></button>
-                                                </li>
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-list-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-list" type="button" role="tab"
-                                                            aria-controls="pills-list" aria-selected="false"><i
-                                                            class="fa-solid fa-list"></i></button>
-                                                </li>
-                                            </ul>
-                                        </div>
-
+                                        </div>                                        
                                     </div>
 
                                     <div class="card-body p-0">
@@ -560,14 +514,13 @@
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th class="ps-4 py-3">Full Name</th>
-                                                        <th>System Role</th>
-                                                        <th>Email Address</th>
-                                                        <th class="text-end pe-4">Actions</th>
+                                                        <th class="ps-4 py-3">System Role</th>
+                                                        <th class="ps-4 py-3">Email Address</th>
+                                                        <th class="text-end pe-4 py-3">Actions</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <c:choose>
-
                                                         <c:when test="${empty sessionScope.staffList}">
                                                             <tr>
                                                                 <td colspan="4" class="text-center py-5 text-muted">
@@ -594,7 +547,7 @@
                                                                                 data-id="${staff.id}"
                                                                                 data-name="${staff.fullName}"
                                                                                 data-email="${staff.email}"
-                                                                                data-role="${staff.role}">
+                                                                                data-role="${staff.class.simpleName}">
                                                                             <i class="fa-solid fa-pen"></i>
                                                                         </button>
 
@@ -615,33 +568,166 @@
                                 </div>
                             </div>
                             
-
                             <!-- Service Pricing Block -->
                             <div id="service-pricing" class="dashboard-section" style="display: none;">
-                                <div class="single-sidebar-widget mb-4">
-                                    <h4 class="widget-title"><i class="fa-solid fa-tags me-2"></i> Service Pricing</h4>
-                                    <p class="mt-3 text-muted">Pricing update form coming soon...</p>
+                                <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+
+                                    <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom">                      
+                                        <div class="col-md">
+                                            <h4 class="widget-title"><i class="fa-solid fa-tags me-2"></i> Service Pricing</h4>
+                                        </div>
+
+                                        <div class="col-md-auto">
+                                            <button class="btn btn-primary fw-bold p-2 mb-3" data-bs-toggle="modal" 
+                                                    data-bs-target="#addServiceModal">
+                                                <i class="fa-solid fa-plus me-2"></i> Add Service
+                                            </button>
+                                        </div>                                        
+                                    </div>
+
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-4 py-3">Service Name</th>
+                                                        <th class="py-3">Description</th> <th class="py-3">Price (RM)</th>
+                                                        <th class="py-3">Duration (Hours)</th>
+                                                        <th class="text-end pe-4 py-3">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <c:choose>
+                                                        <c:when test="${empty sessionScope.serviceList}">
+                                                            <tr>
+                                                                <td colspan="5" class="text-center py-5 text-muted">
+                                                                    <i class="fa-solid fa-folder-open fa-2x mb-3 opacity-50"></i>
+                                                                    <p class="mb-0">No services found. Click 'Add Service' to create one.</p>
+                                                                </td>
+                                                            </tr>
+                                                        </c:when>
+
+                                                        <c:otherwise>
+                                                            <c:forEach items="${sessionScope.serviceList}" var="service">
+                                                                <tr>
+                                                                    <td class="ps-4 fw-bold text-dark">${service.name}</td>
+
+                                                                    <td class="text-muted" style="max-width: 250px;">
+                                                                        <small>${service.description}</small>
+                                                                    </td>
+
+                                                                    <td class="text-success fw-bold">
+                                                                        <fmt:formatNumber value="${service.price}" type="currency" currencySymbol="RM " minFractionDigits="2"/>
+                                                                    </td>
+
+                                                                    <td class="text-muted">${service.durationHours} hrs</td>
+
+                                                                    <td class="text-end pe-4">
+                                                                        <button class="btn btn-sm btn-outline-primary me-1 edit-service-btn" 
+                                                                                title="Edit Service" 
+                                                                                data-bs-toggle="modal" 
+                                                                                data-bs-target="#editServiceModal"
+                                                                                data-id="${service.id}"
+                                                                                data-name="${service.name}"
+                                                                                data-description="${service.description}"
+                                                                                data-price="${service.price}"
+                                                                                data-duration="${service.durationHours}">
+                                                                            <i class="fa-solid fa-pen"></i>
+                                                                        </button>
+
+                                                                        <a href="DeleteServiceServlet?id=${service.id}" class="btn btn-sm btn-outline-danger" 
+                                                                           onclick="return confirm('Are you sure you want to delete the ${service.name} service?');" title="Delete Service">
+                                                                            <i class="fa-solid fa-trash"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                            </c:forEach>
+                                                        </c:otherwise>
+
+                                                    </c:choose>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- View Feedback Block -->
                             <div id="view-feedback" class="dashboard-section" style="display: none;">
-                                <div class="single-sidebar-widget mb-4">
-                                    <h4 class="widget-title"><i class="fa-solid fa-comments me-2"></i> Customer Feedback</h4>
-                                    <p class="mt-3 text-muted">Feedback records coming soon...</p>
+                                <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+
+                                    <div class="card-header bg-white p-4 border-bottom">
+                                        <h4 class="widget-title mb-0"><i class="fa-solid fa-comments me-2"></i> Customer Feedback</h4>
+                                    </div>
+
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-4 py-3">Date</th>
+                                                        <th class="ps-4 py-3">Customer</th>
+                                                        <th class="ps-4 py-3">Service Type</th>
+                                                        <th class="pe-4 py-3">Feedback Context</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <c:choose>
+
+                                                        <c:when test="${empty sessionScope.allFeedbackList}">
+                                                            <tr>
+                                                                <td colspan="4" class="text-center py-5 text-muted">
+                                                                    <i class="fa-regular fa-comment-dots fa-2x mb-3 opacity-50"></i>
+                                                                    <p class="mb-0">No customer feedback has been submitted yet.</p>
+                                                                </td>
+                                                            </tr>
+                                                        </c:when>
+
+                                                        <c:otherwise>
+                                                            <c:forEach items="${sessionScope.allFeedbackList}" var="fb">
+                                                                <tr>
+                                                                    <td class="ps-4">
+                                                                        <span class="text-muted small">
+                                                                            <fmt:formatDate value="${fb.submissionDate}" pattern="dd MMM yyyy" />
+                                                                        </span>
+                                                                    </td>
+
+                                                                    <td class="fw-bold text-dark">
+                                                                        ${fb.appointment.customer.fullName}
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <span class="badge bg-info text-dark">
+                                                                            ${fb.appointment.serviceType.serviceName}
+                                                                        </span>
+                                                                    </td>
+
+                                                                    <td class="pe-4" style="max-width: 300px; white-space: normal;">
+                                                                        ${fb.context}
+                                                                    </td>
+                                                                </tr>
+                                                            </c:forEach>
+                                                        </c:otherwise>
+
+                                                    </c:choose>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                             
                             <!-- Bottom Navigation -->
                             <div class="page-nav-wrap text-center">
                                 <ul>
-                                    <li><a class="previous" href="shop.html"><i
+                                    <li><a class="previous" href="#"><i
                                                 class="fa-sharp fa-light fa-arrow-left-long"></i></a></li>
-                                    <li><a class="page-numbers" href="shop.html">1</a></li>
-                                    <li><a class="page-numbers active" href="shop.html">2</a></li>
-                                    <li><a class="page-numbers" href="shop.html">3</a></li>
-                                    <li><a class="page-numbers" href="shop.html">...</a></li>
-                                    <li><a class="next" href="shop.html"><i
+                                    <li><a class="page-numbers" href="#">1</a></li>
+                                    <li><a class="page-numbers active" href="#">2</a></li>
+                                    <li><a class="page-numbers" href="#">3</a></li>
+                                    <li><a class="page-numbers" href="#">...</a></li>
+                                    <li><a class="next" href="#"><i
                                                 class="fa-sharp fa-light fa-arrow-right-long"></i></a></li>
                                 </ul>
                             </div>
@@ -778,6 +864,8 @@
         <!-- PopUp Start -->
         <jsp:include page="component/staffCreationPopUp.jsp" />
         <jsp:include page="component/staffUpdatePopUp.jsp" />
+        <jsp:include page="component/serviceCreationPopUp.jsp" />
+        <jsp:include page="component/serviceUpdatePopUp.jsp" />
         
         <!-- Footer Start -->
         <jsp:include page="component/footer.jsp" />
@@ -856,7 +944,30 @@
                         document.getElementById('edit-staff-role').value = role;
                     });
                 }
+                // -------------------------------------------------
+                // 3. EDIT SERVICE MODAL DATA TRANSFER
+                // -------------------------------------------------
+                const editServiceModal = document.getElementById('editServiceModal');
                 
+                if (editServiceModal) {
+                    editServiceModal.addEventListener('show.bs.modal', function (event) {
+                        const button = event.relatedTarget;
+                        
+                        // Extract data from the clicked button
+                        const id = button.getAttribute('data-id');
+                        const name = button.getAttribute('data-name');
+                        const description = button.getAttribute('data-description'); // NEW
+                        const price = button.getAttribute('data-price');
+                        const duration = button.getAttribute('data-duration');
+                        
+                        // Inject data into the Update Modal inputs
+                        document.getElementById('edit-service-id').value = id;
+                        document.getElementById('edit-service-name').value = name;
+                        document.getElementById('edit-service-description').value = description; // NEW
+                        document.getElementById('edit-service-price').value = price;
+                        document.getElementById('edit-service-duration').value = duration;
+                    });
+                }
             });
         </script>
         

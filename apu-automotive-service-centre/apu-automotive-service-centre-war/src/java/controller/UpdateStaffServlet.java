@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import model.CounterStaff;
 
 import model.Manager;
+import model.Technician;
 import model.User;
 import model.UserFacade;
 
@@ -45,33 +47,57 @@ public class UpdateStaffServlet extends HttpServlet {
 
         try {
             // Grab the updated data from the Modal
-            Long staffId = Long.valueOf(request.getParameter("staffId"));
+            Long staffId = Long.parseLong(request.getParameter("staffId"));
             String fullName = request.getParameter("fullName");
             String email = request.getParameter("email");
+            String newRole = request.getParameter("role"); // Grab the new dropdown value
 
             // Find the exact user in the database
             User staffToUpdate = userFacade.find(staffId);
             
             if (staffToUpdate != null) {
-                // Update their details
-                staffToUpdate.setFullName(fullName);
-                staffToUpdate.setEmail(email);
                 
-                // Save the changes to the database
-                userFacade.edit(staffToUpdate);
+                // Get their current Java Class name (e.g., "Manager" or "Technician")
+                String currentRole = staffToUpdate.getClass().getSimpleName();
 
-                // Refresh the Dashboard Data!
+                if (!currentRole.equals(newRole)) {
+                    User newStaff = null;
+                    switch (newRole) {
+                        case "Manager":
+                            newStaff = new Manager();
+                            break;
+                        case "CounterStaff":
+                            newStaff = new CounterStaff();
+                            break;
+                        case "Technician":
+                            newStaff = new Technician();
+                            break;
+                    }
+
+                    newStaff.setFullName(fullName);
+                    newStaff.setEmail(email);
+                    newStaff.setPasswordHash(staffToUpdate.getPasswordHash());
+                    
+                    userFacade.remove(staffToUpdate); 
+                    userFacade.create(newStaff);
+                    
+                } else {
+                    staffToUpdate.setFullName(fullName);
+                    staffToUpdate.setEmail(email);
+                    userFacade.edit(staffToUpdate);
+                }
+
                 List<User> updatedStaffList = userFacade.getAllStaff();
                 session.setAttribute("staffList", updatedStaffList);
 
                 session.setAttribute("popupMessage", "Profile for " + fullName + " was successfully updated!");
                 session.setAttribute("popupType", "success");
+                
             } else {
                 session.setAttribute("popupMessage", "Update Error: Staff member not found.");
                 session.setAttribute("popupType", "error");
             }
             
-            // Send them back to the Manage Staff tab
             response.sendRedirect("manager_dashboard.jsp#manage-staff");
 
         } catch (Exception e) {

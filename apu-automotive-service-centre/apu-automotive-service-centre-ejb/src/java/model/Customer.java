@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -12,15 +13,32 @@ import javax.persistence.Entity;
  * @author TPY
  */
 @Entity
-@DiscriminatorValue("CUSTOMER") // Insert "CUSTOMER" into the 'role' column when saving this object
-public class Customer extends User{
-    
+@DiscriminatorValue("CUSTOMER") 
+public class Customer extends SystemUser implements Serializable {
+
+    private int loyaltyPoints;
+
+    // 1. Empty Constructor (Required by JPA)
     public Customer() {
-        super();
+        super(); // Calls the empty SystemUser constructor
+        this.loyaltyPoints = 0; // Default value
     }
 
-    public Customer(String email, String passwordHash, String role, String fullName, String phoneNumber) {
-        super(email, passwordHash, role, fullName, phoneNumber);
+    // 2. Full Constructor (This is what you will use in your Registration Servlet!)
+    public Customer(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber) {
+        // 'super' takes these variables and sends them up to the SystemUser class to be saved!
+        super(username, email, passwordHash, name, phoneNumber, icNumber);
+        
+        // Then we set the specific Customer variable
+        this.loyaltyPoints = 0; 
     }
-    
+
+    // --- Getters and Setters ---
+    public int getLoyaltyPoints() {
+        return loyaltyPoints;
+    }
+
+    public void setLoyaltyPoints(int loyaltyPoints) {
+        this.loyaltyPoints = loyaltyPoints;
+    }
 }

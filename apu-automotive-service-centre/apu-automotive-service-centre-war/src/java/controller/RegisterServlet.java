@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import java.io.IOException;
@@ -11,63 +7,64 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.Customer;
-import model.UserFacade;
 
-/**
- *
- * @author TPY
- */
+import model.Customer;
+import model.CustomerFacade;
+import model.SystemUserFacade;
+
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/RegisterServlet"})
 public class RegisterServlet extends HttpServlet {
-   @EJB
-    private UserFacade userFacade;
+    
+    @EJB
+    private CustomerFacade customerFacade;
+    
+    @EJB
+    private SystemUserFacade systemUserFacade;
    
-@Override
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
         response.setContentType("text/html;charset=UTF-8");
         
         try {
-            // Grab form data
+            // 1. Grab all form data
             String email = request.getParameter("email");
             String password = request.getParameter("password");
-            String fullName = request.getParameter("fullName");
             String phone = request.getParameter("phone");
+            String username = request.getParameter("username"); 
+            String icNumber = request.getParameter("icNumber"); 
+            
+            // THE FIX 1: Grab the fullName from your HTML form!
+            String fullName = request.getParameter("fullName"); 
 
-            // Check if email exists
-            if (userFacade.emailExists(email)) {
-                // Save an error message to the session and send them back
+            // 2. Check if email exists
+            if (systemUserFacade.emailExists(email)) {
                 request.getSession().setAttribute("popupMessage", "Registration Failed: That email is already in use!");
                 request.getSession().setAttribute("popupType", "error");
                 response.sendRedirect("register.jsp");
-                return; // Stop the code here so we don't create a duplicate user!
+                return; 
             }
 
-            // Create the Customer
-            Customer newCustomer = new Customer();
-            newCustomer.setEmail(email);
-            newCustomer.setPasswordHash(password);
-            newCustomer.setFullName(fullName);
-            newCustomer.setPhoneNumber(phone);
+            // 3. Create the Customer
+            // THE FIX 2: Pass 'fullName' into the constructor instead of the undefined 'name'
+            Customer newCustomer = new Customer(username, email, password, fullName, phone, icNumber);
 
-            // Save to database
-            boolean isSuccess = userFacade.createUser(newCustomer);
-
-            if (isSuccess) {
-                // Save a success message and send them to the login page
+            // 4. Save to database 
+            try {
+                customerFacade.create(newCustomer);
                 request.getSession().setAttribute("popupMessage", "Registration Successful! You can now log in.");
                 request.getSession().setAttribute("popupType", "success");
                 response.sendRedirect("login.jsp");
-            } else {
-                request.getSession().setAttribute("popupMessage", "Registration Failed: Database error.");
+                
+            } catch (Exception e) {
+                // If the database crashes (e.g., they used a Username or IC that is already taken)
+                request.getSession().setAttribute("popupMessage", "Registration Failed: Username or IC Number already taken.");
                 request.getSession().setAttribute("popupType", "error");
                 response.sendRedirect("register.jsp");
             }
 
-        } catch (IOException e) {
-            // 5. The Safety Net: Catch any unexpected server crashes
+        } catch (Exception e) {
             e.printStackTrace(); 
             request.getSession().setAttribute("popupMessage", "A server error occurred. Please try again later.");
             request.getSession().setAttribute("popupType", "error");

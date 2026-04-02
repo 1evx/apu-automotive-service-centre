@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -12,15 +13,28 @@ import javax.persistence.Entity;
  * @author TPY
  */
 @Entity
-@DiscriminatorValue("CounterStaff") // Insert "CUSTOMER" into the 'role' column when saving this object
-public class CounterStaff extends User{
-    
+@DiscriminatorValue("COUNTER_STAFF") 
+public class CounterStaff extends SystemUser implements Serializable {
+
+    private String shiftType;
+
+    // 1. Empty Constructor
     public CounterStaff() {
         super();
     }
 
-    public CounterStaff(String email, String passwordHash, String role, String fullName, String phoneNumber) {
-        super(email, passwordHash, role, fullName, phoneNumber);
+    // 2. Full Constructor
+    public CounterStaff(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber, String shiftType) {
+        super(username, email, passwordHash, name, phoneNumber, icNumber);
+        this.shiftType = shiftType;
     }
-    
+
+    // --- Getters and Setters ---
+    public String getShiftType() {
+        return shiftType;
+    }
+
+    public void setShiftType(String shiftType) {
+        this.shiftType = shiftType;
+    }
 }

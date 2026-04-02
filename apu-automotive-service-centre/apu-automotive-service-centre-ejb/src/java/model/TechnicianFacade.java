@@ -10,7 +10,7 @@ import javax.persistence.PersistenceContext;
 
 /**
  *
- * @author TPY
+ * @author Asus
  */
 @Stateless
 public class TechnicianFacade extends AbstractFacade<Technician> {

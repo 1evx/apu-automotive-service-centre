@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -12,15 +13,42 @@ import javax.persistence.Entity;
  * @author TPY
  */
 @Entity
-@DiscriminatorValue("STAFF") // Insert "STAFF" into the 'role' column when saving this object
-public class Technician extends User {
-    
+@DiscriminatorValue("TECHNICIAN") 
+public class Technician extends SystemUser implements Serializable {
+
+    private String specialization;
+    private boolean isAvailable;
+
     public Technician() {
         super();
+        this.isAvailable = true; 
+    }
+
+    // The Full Constructor
+    public Technician(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber, String specialization) {
+        // Send the core user data UP to SystemUser
+        super(username, email, passwordHash, name, phoneNumber, icNumber);
+        
+        // Set the specific Technician data
+        this.specialization = specialization;
+        this.isAvailable = true;
+    }    
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
+
+    public boolean isIsAvailable() {
+        return isAvailable;
+    }
+
+    public void setIsAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
     }
     
-    public Technician(String email, String passwordHash, String role, String fullName, String phoneNumber) {
-        super(email, passwordHash, role, fullName, phoneNumber);
-    }
     
 }

@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -12,15 +13,32 @@ import javax.persistence.Entity;
  * @author TPY
  */
 @Entity
-@DiscriminatorValue("MANAGER") // Insert "MANAGER" into the 'role' column when saving this object
-public class Manager extends User{
-    
+@DiscriminatorValue("MANAGER") 
+public class Manager extends SystemUser implements Serializable {
+
+    private String officeLocation;
+
+    // 1. Empty Constructor (Required by JPA)
     public Manager() {
         super();
     }
 
-    public Manager(String email, String passwordHash, String role, String fullName, String phoneNumber) {
-        super(email, passwordHash, role, fullName, phoneNumber);
+    // 2. Full Constructor
+    public Manager(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber, String officeLocation) {
+        // Send the core user data UP to SystemUser
+        super(username, email, passwordHash, name, phoneNumber, icNumber);
+        
+        // Set the specific Manager data
+        this.officeLocation = officeLocation;
     }
+
+    public String getOfficeLocation() {
+        return officeLocation;
+    }
+
+    public void setOfficeLocation(String officeLocation) {
+        this.officeLocation = officeLocation;
+    }
+    
     
 }

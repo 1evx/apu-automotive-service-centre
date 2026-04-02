@@ -13,7 +13,7 @@ import javax.persistence.PersistenceContext;
  * @author Asus
  */
 @Stateless
-public class CustomerFacade extends AbstractFacade<Customer> {
+public class SuperManagerFacade extends AbstractFacade<SuperManager> {
 
     @PersistenceContext(unitName = "apu-automotive-service-centre-ejbPU")
     private EntityManager em;
@@ -23,8 +23,8 @@ public class CustomerFacade extends AbstractFacade<Customer> {
         return em;
     }
 
-    public CustomerFacade() {
-        super(Customer.class);
+    public SuperManagerFacade() {
+        super(SuperManager.class);
     }
     
 }

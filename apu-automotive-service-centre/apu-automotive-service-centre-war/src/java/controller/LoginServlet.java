@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import java.io.IOException;
@@ -12,59 +8,67 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import model.CounterStaff;
-import model.Customer;
-import model.Manager;
-import model.Technician;
-import model.User;
-import model.UserFacade;
 
-/**
- *
- * @author TPY
- */
+// Using the new, secure entities we just built!
+import model.SystemUser;
+import model.SuperManager;
+import model.Manager;
+import model.CounterStaff;
+import model.Technician;
+import model.Customer;
+import model.SystemUserFacade;
+
 @WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
 public class LoginServlet extends HttpServlet {
-// This injects your Business Tier (EJB) into the Presentation Tier (Servlet)
+
+    // Injects your new Facade
     @EJB
-    private UserFacade userFacade;
+    private SystemUserFacade systemUserFacade;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Grab the inputs from your Bootstrap login.jsp form
+        // 1. Grab the inputs from your Bootstrap login.jsp form
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        // Ask the EJB to check the database for these credentials
-        User user = userFacade.authenticate(email, password);
+        // 2. Ask the EJB to check the database
+        SystemUser currentUser = systemUserFacade.login(email, password);
 
-        // Process the result
-        if (user != null) {
-            // Success! Create a session and save the user data for later use
+        // 3. Process the result
+        if (currentUser != null) {
+            // Success! Create a session
             HttpSession session = request.getSession();
-            session.setAttribute("currentUser", user);
+            session.setAttribute("currentUser", currentUser);
+            
+            // Pro-tip: Save the role string to the session too. 
+            // It makes it super easy to hide/show buttons in your JSP navbar!
+            session.setAttribute("userRole", currentUser.getRole());
 
-            // 4. Role-Based Routing using JPA Inheritance
-            if (user instanceof Manager) {
-                response.sendRedirect("manager_dashboard.jsp");
-                return; // CRITICAL: Stops execution to prevent Server Error 500
+            // 4. Role-Based Routing using our JPA Discriminator setup
+            if (currentUser instanceof SuperManager) {
+                response.sendRedirect("superManager_dashboard.jsp");
+                return; 
                 
-            } else if (user instanceof CounterStaff) {
+            } else if (currentUser instanceof Manager) {
+                response.sendRedirect("manager_dashboard.jsp");
+                return;
+                
+            } else if (currentUser instanceof CounterStaff) {
                 response.sendRedirect("counter_dashboard.jsp");
                 return;
                 
-            } else if (user instanceof Technician) {
+            } else if (currentUser instanceof Technician) {
                 response.sendRedirect("technician_dashboard.jsp");
                 return;
                 
-            } else if (user instanceof Customer) {
+            } else if (currentUser instanceof Customer) {
                 response.sendRedirect("customer_dashboard.jsp");
                 return;
                 
             } else {
-                // Fallback just in case a user has no defined role
+                // Fallback just in case
                 response.sendRedirect("login.jsp?error=UnknownRole");
                 return;
             }

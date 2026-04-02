@@ -12,7 +12,7 @@ import javax.persistence.Entity;
  * @author TPY
  */
 @Entity
-@DiscriminatorValue("STAFF") // Insert "STAFF" into the 'role' column when saving this object
+@DiscriminatorValue("TECHNICIAN")
 public class Technician extends User {
     
     public Technician() {

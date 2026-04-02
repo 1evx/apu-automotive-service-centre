@@ -22,8 +22,12 @@
                         <input type="hidden" name="staffId" id="edit-staff-id">
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold small text-muted">System Role (Read-Only)</label>
-                            <input type="text" id="edit-staff-role" class="form-control bg-light" readonly>
+                            <label class="form-label fw-bold small text-muted">System Role</label>
+                            <select name="role" id="edit-staff-role" class="form-select" required>
+                                <option value="Manager">Manager</option>
+                                <option value="CounterStaff">Counter Staff</option>
+                                <option value="Technician">Technician</option>
+                            </select>
                         </div>
 
                         <div class="mb-3">

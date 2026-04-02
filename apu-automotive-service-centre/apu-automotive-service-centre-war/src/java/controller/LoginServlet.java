@@ -20,6 +20,8 @@ import model.Customer;
 import model.Feedback;
 import model.FeedbackFacade;
 import model.Manager;
+import model.ServiceType;
+import model.ServiceTypeFacade;
 import model.Technician;
 import model.User;
 import model.UserFacade;
@@ -30,7 +32,6 @@ import model.UserFacade;
  */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
 public class LoginServlet extends HttpServlet {
-// This injects your Business Tier (EJB) into the Presentation Tier (Servlet)
     @EJB
     private UserFacade userFacade;
     
@@ -39,6 +40,9 @@ public class LoginServlet extends HttpServlet {
     
     @EJB
     private FeedbackFacade FeedbackFacade;
+    
+    @EJB
+    private ServiceTypeFacade ServiceTypeFacade;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -47,11 +51,9 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         
         try {
-            // 1. Grab the inputs from your login form
             String email = request.getParameter("email");
             String password = request.getParameter("password");
 
-            // 2. Basic Validation: Prevent empty submissions
             if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
                 request.getSession().setAttribute("popupMessage", "Please enter both your email and password.");
                 request.getSession().setAttribute("popupType", "warning");
@@ -59,15 +61,11 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            // 3. Ask the EJB to check the database
             User user = userFacade.authenticate(email, password);
 
-            // 4. Process the result
             if (user != null) {
-                // Success! Create a session and save the user data
                 HttpSession session = request.getSession();
                 session.setAttribute("currentUser", user);
-                // Set a "Welcome" pop-up for when they arrive at their dashboard!
                 session.setAttribute("popupMessage", "Welcome back, " + user.getFullName() + "!");
                 session.setAttribute("popupType", "success");
 
@@ -75,10 +73,12 @@ public class LoginServlet extends HttpServlet {
                 if (user instanceof Manager) {
                     
                     List<User> staffList = userFacade.getAllStaff();
-                    List<Feedback> allFeedbackList = FeedbackFacade.getAllFeedback();
+                    List<Feedback> allFeedbackList = FeedbackFacade.findAll();
+                    List<ServiceType> serviceList = ServiceTypeFacade.findAll();
                     
                     session.setAttribute("staffList", staffList);
                     session.setAttribute("allFeedbackList", allFeedbackList);
+                    session.setAttribute("serviceList", serviceList);
                     
                     response.sendRedirect("manager_dashboard.jsp");
                     

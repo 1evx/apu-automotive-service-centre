@@ -27,4 +27,14 @@ public class ServiceTypeFacade extends AbstractFacade<ServiceType> {
         super(ServiceType.class);
     }
     
+    public model.ServiceType findByName(String name) {
+        try {
+            return (model.ServiceType) getEntityManager().createQuery(
+                "SELECT s FROM ServiceType s WHERE s.name = :name")
+                .setParameter("name", name)
+                .getSingleResult();
+        } catch (javax.persistence.NoResultException e) {
+            return null; 
+        }
+    }
 }

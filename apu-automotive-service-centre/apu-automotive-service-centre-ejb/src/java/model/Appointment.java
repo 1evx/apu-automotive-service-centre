@@ -25,7 +25,7 @@ public class Appointment implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id; // Changed to Long for proper Auto-Generation
+    private Long id;
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
@@ -36,7 +36,7 @@ public class Appointment implements Serializable {
     private String appointmentTime;
 
     @Column(nullable = false)
-    private String serviceType; // e.g., "Oil Change", "Full Service", "Tyre Replacement"
+    private String serviceType;
 
     @Column(nullable = false)
     private String status; // e.g., "Pending", "Approved", "Completed", "Cancelled"
@@ -54,14 +54,10 @@ public class Appointment implements Serializable {
     private Customer customer;
 
     // Many Appointments can be assigned to One Technician
-    // This is nullable=true because a new appointment won't have a technician assigned yet!
     @ManyToOne
     @JoinColumn(name = "TECHNICIAN_ID", nullable = true)
     private Technician technician;
 
-    // ==========================================
-    // CONSTRUCTORS
-    // ==========================================
     public Appointment() {
     }
 
@@ -74,9 +70,6 @@ public class Appointment implements Serializable {
         this.customer = customer;
     }
 
-    // ==========================================
-    // GETTERS AND SETTERS
-    // ==========================================
     public Long getId() {
         return id;
     }

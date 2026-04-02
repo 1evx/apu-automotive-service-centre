@@ -38,9 +38,10 @@ public abstract class User implements Serializable {
     @Column(nullable = false)
     private String passwordHash;
     
-    private String role; // 'MANAGER', 'STAFF', 'TECHNICIAN', 'CUSTOMER'
+    private String role; // 'MANAGER', 'COUNTERSTAFF', 'TECHNICIAN', 'CUSTOMER'
     private String fullName;
     private String phoneNumber;
+    private String address;
 
     public User() {}
 
@@ -98,6 +99,14 @@ public abstract class User implements Serializable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+    
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
     
     @Override

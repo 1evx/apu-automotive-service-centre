@@ -7,13 +7,15 @@ package model;
 import java.io.Serializable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  *
  * @author TPY
  */
 @Entity
-@DiscriminatorValue("MANAGER") 
+@DiscriminatorValue("MANAGER")
+@Table(name = "MANAGER", schema = "APP")
 public class Manager extends SystemUser implements Serializable {
 
     private String officeLocation;
@@ -24,9 +26,9 @@ public class Manager extends SystemUser implements Serializable {
     }
 
     // 2. Full Constructor
-    public Manager(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber, String officeLocation) {
+    public Manager(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber, String officeLocation, String address) {
         // Send the core user data UP to SystemUser
-        super(username, email, passwordHash, name, phoneNumber, icNumber);
+        super(username, email, passwordHash, name, phoneNumber, icNumber, address);
         
         // Set the specific Manager data
         this.officeLocation = officeLocation;

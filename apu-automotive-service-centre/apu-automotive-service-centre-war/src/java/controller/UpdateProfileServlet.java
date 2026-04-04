@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import java.io.IOException;
@@ -14,25 +10,22 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import model.CounterStaff;
-import model.User;
-import model.UserFacade;
+import model.Technician; 
+import model.SystemUser;
+import model.SystemUserFacade;
 
-/**
- *
- * @author TPY
- */
 @WebServlet(name = "UpdateProfileServlet", urlPatterns = {"/UpdateProfileServlet"})
 public class UpdateProfileServlet extends HttpServlet {
 
     @EJB
-    private UserFacade userFacade;
+    private SystemUserFacade systemUserFacade; 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
-        User currentUser = (User) session.getAttribute("currentUser");
+        SystemUser currentUser = (SystemUser) session.getAttribute("currentUser");
         
         // Security Check
         if (currentUser == null) {
@@ -41,40 +34,52 @@ public class UpdateProfileServlet extends HttpServlet {
         }
 
         try {
-            // 1. Grab data from the HTML form
+            // 1. Grab general data from the HTML form
             Long userId = Long.parseLong(request.getParameter("userId"));
             String fullName = request.getParameter("fullName");
             String email = request.getParameter("email");
-            String phone = request.getParameter("phone"); // Maps to phoneNumber in Java
+            String phoneNumber = request.getParameter("phoneNumber"); 
             String address = request.getParameter("address");
-            String shiftType = request.getParameter("shiftType");
             String password = request.getParameter("password");
 
             // 2. Find the fresh user object in the database
-            User userToUpdate = userFacade.find(userId);
+            SystemUser userToUpdate = systemUserFacade.find(userId);
             
             if (userToUpdate != null) {
-                // 3. Update the standard fields
+                // 3. Update the standard fields that everyone shares
                 userToUpdate.setFullName(fullName);
                 userToUpdate.setEmail(email);
-                userToUpdate.setPhoneNumber(phone);
+                userToUpdate.setPhoneNumber(phoneNumber);
                 userToUpdate.setAddress(address); 
 
-                // 4. Update specific Counter Staff fields
+                // 4. ROLE-SPECIFIC UPDATES
                 if (userToUpdate instanceof CounterStaff) {
                     CounterStaff staff = (CounterStaff) userToUpdate;
-                    staff.setShiftType(shiftType); 
+                    if (request.getParameter("shiftType") != null) {
+                        staff.setShiftType(request.getParameter("shiftType")); 
+                    }
+                } 
+                else if (userToUpdate instanceof Technician) {
+                    Technician tech = (Technician) userToUpdate;
+                    
+                    if (request.getParameter("specialization") != null) {
+                        tech.setSpecialization(request.getParameter("specialization"));
+                    }
+                    if (request.getParameter("isAvailable") != null) {
+                        boolean available = Boolean.parseBoolean(request.getParameter("isAvailable"));
+                        tech.setIsAvailable(available);
+                    }
                 }
 
-                // 5. Only update the password if they typed something new!
+                // 5. Only update the password if they typed something new
                 if (password != null && !password.trim().isEmpty()) {
                     userToUpdate.setPasswordHash(password); 
                 }
 
                 // 6. Save to Database
-                userFacade.edit(userToUpdate);
+                systemUserFacade.edit(userToUpdate);
 
-                // 7. Refresh the Session! (This makes the UI update instantly)
+                // 7. Refresh the Session
                 session.setAttribute("currentUser", userToUpdate);
 
                 session.setAttribute("popupMessage", "Your profile has been successfully updated!");
@@ -84,18 +89,29 @@ public class UpdateProfileServlet extends HttpServlet {
                 session.setAttribute("popupType", "error");
             }
             
-            // 8. Redirect back to the correct dashboard tab
+            // 8. Redirect back to the exact dashboard they came from
+            // FIXED: Filename is now counterStaff_dashboard.jsp
             if (currentUser instanceof CounterStaff) {
-                response.sendRedirect("counter_dashboard.jsp#my-profile");
+                response.sendRedirect("counterStaff_dashboard.jsp#edit-profile");
+            } else if (currentUser instanceof Technician) {
+                response.sendRedirect("technician_dashboard.jsp#edit-profile");
             } else {
-                response.sendRedirect("manager_dashboard.jsp#my-profile"); // Reusable for Managers!
+                response.sendRedirect("manager_dashboard.jsp#edit-profile"); 
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("popupMessage", "An error occurred while updating your profile.");
             session.setAttribute("popupType", "error");
-            response.sendRedirect("counter_dashboard.jsp#my-profile");
+            
+            // FIXED: Added the missing CounterStaff fallback!
+            if (currentUser instanceof CounterStaff) {
+                response.sendRedirect("counterStaff_dashboard.jsp#edit-profile");
+            } else if (currentUser instanceof Technician) {
+                response.sendRedirect("technician_dashboard.jsp#edit-profile");
+            } else {
+                response.sendRedirect("manager_dashboard.jsp#edit-profile");
+            }
         }
     }
 }

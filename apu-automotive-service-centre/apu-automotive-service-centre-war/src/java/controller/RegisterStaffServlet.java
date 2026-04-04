@@ -17,8 +17,8 @@ import javax.servlet.http.HttpSession;
 import model.CounterStaff;
 import model.Manager;
 import model.Technician;
-import model.User;
-import model.UserFacade;
+import model.SystemUser;
+import model.SystemUserFacade;
 
 /**
  *
@@ -29,14 +29,14 @@ import model.UserFacade;
 public class RegisterStaffServlet extends HttpServlet {
 
     @EJB
-    private UserFacade userFacade;
+    private SystemUserFacade SystemUserFacade;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
-        User currentUser = (User) session.getAttribute("currentUser");
+        SystemUser currentUser = (SystemUser) session.getAttribute("currentUser");
         
         // SECURITY CHECK: Ensure only logged-in Managers can do this
         if (currentUser == null || !(currentUser instanceof Manager)) {
@@ -54,7 +54,7 @@ public class RegisterStaffServlet extends HttpServlet {
             String password = request.getParameter("password");
 
             // Create the Correct Object Based on the Dropdown Role
-            User newStaff = null;
+            SystemUser newStaff = null;
             switch (role) {
                 case "Manager":
                     newStaff = new Manager();
@@ -76,11 +76,11 @@ public class RegisterStaffServlet extends HttpServlet {
 
             // Save the new staff member to the database!
             // (NetBeans auto-generates the create() method inside AbstractFacade)
-            userFacade.create(newStaff);
+            SystemUserFacade.create(newStaff);
 
             // INSTANT DASHBOARD REFRESH
             // Ask the database for the new, updated list of staff and overwrite the old session list
-            List<User> updatedStaffList = userFacade.getAllStaff();
+            List<SystemUser> updatedStaffList = SystemUserFacade.getAllStaff();
             session.setAttribute("staffList", updatedStaffList);
 
             // Send them back with a success message

@@ -7,6 +7,7 @@ package model;
 import java.io.Serializable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  *
@@ -14,6 +15,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("SUPER_MANAGER") 
+@Table(name = "SUPER_MANAGER", schema = "APP")
 public class SuperManager extends SystemUser implements Serializable {
 
     private String masterClearance;
@@ -24,8 +26,8 @@ public class SuperManager extends SystemUser implements Serializable {
     }
 
     // 2. Full Constructor
-    public SuperManager(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber, String masterClearance) {
-        super(username, email, passwordHash, name, phoneNumber, icNumber);
+    public SuperManager(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber, String masterClearance, String address) {
+        super(username, email, passwordHash, name, phoneNumber, icNumber, address);
         this.masterClearance = masterClearance;
     }
 

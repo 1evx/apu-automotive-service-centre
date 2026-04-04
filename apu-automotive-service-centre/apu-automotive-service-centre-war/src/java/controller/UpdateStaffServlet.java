@@ -17,9 +17,8 @@ import model.CounterStaff;
 
 import model.Manager;
 import model.Technician;
-import model.User;
-import model.UserFacade;
-
+import model.SystemUser;
+import model.SystemUserFacade;
 /**
  *
  * @author TPY
@@ -28,14 +27,14 @@ import model.UserFacade;
 public class UpdateStaffServlet extends HttpServlet {
 
     @EJB
-    private UserFacade userFacade;
+    private SystemUserFacade SystemUserFacade;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
-        User currentUser = (User) session.getAttribute("currentUser");
+        SystemUser currentUser = (SystemUser) session.getAttribute("currentUser");
         
         // SECURITY CHECK: Only Managers!
         if (currentUser == null || !(currentUser instanceof Manager)) {
@@ -53,7 +52,7 @@ public class UpdateStaffServlet extends HttpServlet {
             String newRole = request.getParameter("role"); // Grab the new dropdown value
 
             // Find the exact user in the database
-            User staffToUpdate = userFacade.find(staffId);
+            SystemUser staffToUpdate = SystemUserFacade.find(staffId);
             
             if (staffToUpdate != null) {
                 
@@ -61,7 +60,7 @@ public class UpdateStaffServlet extends HttpServlet {
                 String currentRole = staffToUpdate.getClass().getSimpleName();
 
                 if (!currentRole.equals(newRole)) {
-                    User newStaff = null;
+                    SystemUser newStaff = null;
                     switch (newRole) {
                         case "Manager":
                             newStaff = new Manager();
@@ -78,16 +77,16 @@ public class UpdateStaffServlet extends HttpServlet {
                     newStaff.setEmail(email);
                     newStaff.setPasswordHash(staffToUpdate.getPasswordHash());
                     
-                    userFacade.remove(staffToUpdate); 
-                    userFacade.create(newStaff);
+                    SystemUserFacade.remove(staffToUpdate); 
+                    SystemUserFacade.create(newStaff);
                     
                 } else {
                     staffToUpdate.setFullName(fullName);
                     staffToUpdate.setEmail(email);
-                    userFacade.edit(staffToUpdate);
+                    SystemUserFacade.edit(staffToUpdate);
                 }
 
-                List<User> updatedStaffList = userFacade.getAllStaff();
+                List<SystemUser> updatedStaffList = SystemUserFacade.getAllStaff();
                 session.setAttribute("staffList", updatedStaffList);
 
                 session.setAttribute("popupMessage", "Profile for " + fullName + " was successfully updated!");

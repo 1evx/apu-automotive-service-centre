@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.io.Serializable;
@@ -18,57 +14,70 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "APPOINTMENT", schema = "APP") // Forces it into the correct schema!
+@Table(name = "APPOINTMENT", schema = "APP") 
 public class Appointment implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY is usually safer than AUTO for Derby/MySQL
     private Long id;
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date appointmentDate;
 
-    // Storing time as a String (e.g., "10:30 AM") is usually easiest for JSF/JSP forms
     @Column(nullable = false)
     private String appointmentTime;
+    
+    // ADDED: Every auto shop needs to know the car plate number!
+    @Column(nullable = false)
+    private String carPlateNumber; 
 
     @Column(nullable = false)
-    private String serviceType;
-
-    @Column(nullable = false)
-    private String status; // e.g., "Pending", "Approved", "Completed", "Cancelled"
+    private String status; // "Pending", "Approved", "In Progress", "Completed", "Cancelled"
 
     @Column(length = 500)
-    private String remarks; // Any extra notes from the customer
+    private String remarks;
 
     // ==========================================
     // RELATIONSHIPS
     // ==========================================
     
-    // Many Appointments belong to One Customer
+    // THE FIX: Links directly to your ServiceType entity, not a random String!
+    @ManyToOne
+    @JoinColumn(name = "SERVICETYPE_ID", nullable = false)
+    private ServiceType serviceType;
+    
     @ManyToOne
     @JoinColumn(name = "CUSTOMER_ID", nullable = false)
     private Customer customer;
 
-    // Many Appointments can be assigned to One Technician
     @ManyToOne
-    @JoinColumn(name = "TECHNICIAN_ID", nullable = true)
+    @JoinColumn(name = "TECHNICIAN_ID", nullable = true) // Nullable because a tech isn't assigned immediately
     private Technician technician;
+
+    // ==========================================
+    // CONSTRUCTORS
+    // ==========================================
 
     public Appointment() {
     }
 
-    public Appointment(Date appointmentDate, String appointmentTime, String serviceType, String status, String remarks, Customer customer) {
+    // Updated Constructor to include the ServiceType object and Car Plate
+    public Appointment(Date appointmentDate, String appointmentTime, String carPlateNumber, ServiceType serviceType, String status, String remarks, Customer customer) {
         this.appointmentDate = appointmentDate;
         this.appointmentTime = appointmentTime;
+        this.carPlateNumber = carPlateNumber;
         this.serviceType = serviceType;
         this.status = status;
         this.remarks = remarks;
         this.customer = customer;
     }
+
+    // ==========================================
+    // GETTERS & SETTERS
+    // ==========================================
 
     public Long getId() {
         return id;
@@ -94,11 +103,19 @@ public class Appointment implements Serializable {
         this.appointmentTime = appointmentTime;
     }
 
-    public String getServiceType() {
+    public String getCarPlateNumber() {
+        return carPlateNumber;
+    }
+
+    public void setCarPlateNumber(String carPlateNumber) {
+        this.carPlateNumber = carPlateNumber;
+    }
+
+    public ServiceType getServiceType() {
         return serviceType;
     }
 
-    public void setServiceType(String serviceType) {
+    public void setServiceType(ServiceType serviceType) {
         this.serviceType = serviceType;
     }
 

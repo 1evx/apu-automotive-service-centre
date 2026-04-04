@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.io.Serializable;
@@ -24,50 +20,39 @@ public class Feedback implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id; // Changed to Long for proper Auto-Generation
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; 
 
-    // Maps to the dropdown in our HTML (General, Technician, CounterStaff)
     @Column(nullable = false)
     private String feedbackType;
 
-    // Optional field, so nullable is true
-    @Column(nullable = true)
-    private String serviceId;
-
-    // Length 1000 to ensure we have enough room for long paragraphs
     @Column(length = 1000, nullable = false)
     private String comments;
 
-    // Automatically records the exact date and time it was submitted
     @Temporal(TemporalType.TIMESTAMP)
     private Date submissionDate;
 
     // ==========================================
-    // RELATIONSHIP: Many Feedbacks belong to One Customer
+    // RELATIONSHIPS
     // ==========================================
-    @ManyToOne
-    @JoinColumn(name = "CUSTOMER_ID", nullable = false)
-    private Customer customer;
-
     
-    // ==========================================
-    // CONSTRUCTORS
-    // ==========================================
+    // Links directly to the Appointment instead of a loose String ID!
+    @ManyToOne
+    @JoinColumn(name = "APPOINTMENT_ID", nullable = false)
+    private Appointment appointment;
+
     public Feedback() {
     }
 
-    public Feedback(String feedbackType, String serviceId, String comments, Date submissionDate, Customer customer) {
+    public Feedback(String feedbackType, String comments, Date submissionDate, Appointment appointment) {
         this.feedbackType = feedbackType;
-        this.serviceId = serviceId;
         this.comments = comments;
         this.submissionDate = submissionDate;
-        this.customer = customer;
+        this.appointment = appointment;
     }
 
-    // ==========================================
-    // GETTERS AND SETTERS
-    // ==========================================
+    // --- Getters & Setters ---
+
     public Long getId() {
         return id;
     }
@@ -82,14 +67,6 @@ public class Feedback implements Serializable {
 
     public void setFeedbackType(String feedbackType) {
         this.feedbackType = feedbackType;
-    }
-
-    public String getServiceId() {
-        return serviceId;
-    }
-
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
     }
 
     public String getComments() {
@@ -108,34 +85,25 @@ public class Feedback implements Serializable {
         this.submissionDate = submissionDate;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Appointment getAppointment() {
+        return appointment;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setAppointment(Appointment appointment) {
+        this.appointment = appointment;
     }
+    
 
-    // ==========================================
-    // DEFAULT JPA METHODS
-    // ==========================================
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        return (id != null ? id.hashCode() : 0);
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Feedback)) {
-            return false;
-        }
+        if (!(object instanceof Feedback)) return false;
         Feedback other = (Feedback) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.io.Serializable;
@@ -18,50 +14,45 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-// We use "COMMENTS" because "COMMENT" is a reserved SQL keyword!
 @Table(name = "COMMENTS", schema = "APP") 
 public class Comment implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id; // Changed to Long for Auto-Generation
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; 
 
-    // Using TIMESTAMP so we know exactly when the comment was posted
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date commentDate; 
 
-    // Length 1000 so users have plenty of space to write
     @Column(length = 1000, nullable = false)
     private String content;
+
+    // Added the rating for the 1-5 star review!
+    @Column(nullable = false)
+    private int rating; 
 
     // ==========================================
     // RELATIONSHIPS
     // ==========================================
     
-    // Many comments can be written by One author (User)
-    // We link this to the abstract 'User' class so Customers, Technicians, and Managers can ALL write comments!
+    // Links directly to the Appointment. (We removed 'author' to keep the database clean!)
     @ManyToOne
-    @JoinColumn(name = "AUTHOR_ID", nullable = false)
-    private User author;
+    @JoinColumn(name = "APPOINTMENT_ID", nullable = false)
+    private Appointment appointment;
 
-    // ==========================================
-    // CONSTRUCTORS
-    // ==========================================
     public Comment() {
     }
 
-    public Comment(Date commentDate, String content, User author) {
+    public Comment(Date commentDate, String content, int rating, Appointment appointment) {
         this.commentDate = commentDate;
         this.content = content;
-        this.author = author;
+        this.rating = rating;
+        this.appointment = appointment;
     }
-
-    // ==========================================
-    // GETTERS AND SETTERS
-    // ==========================================
+    
     public Long getId() {
         return id;
     }
@@ -86,34 +77,33 @@ public class Comment implements Serializable {
         this.content = content;
     }
 
-    public User getAuthor() {
-        return author;
+    public int getRating() {
+        return rating;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
-    // ==========================================
-    // DEFAULT JPA METHODS
-    // ==========================================
+    public Appointment getAppointment() {
+        return appointment;
+    }
+
+    // --- Getters & Setters ---
+    public void setAppointment(Appointment appointment) {    
+        this.appointment = appointment;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        return (id != null ? id.hashCode() : 0);
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Comment)) {
-            return false;
-        }
+        if (!(object instanceof Comment)) return false;
         Comment other = (Comment) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

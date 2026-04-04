@@ -30,7 +30,7 @@ public class FeedbackFacade extends AbstractFacade<Feedback> {
     
     public List<Feedback> getFeedbackByCustomer(model.Customer customer) {
         return getEntityManager().createQuery(
-            "SELECT f FROM Feedback f WHERE f.customer = :cust ORDER BY f.submissionDate DESC", Feedback.class)
+            "SELECT f FROM Feedback f WHERE f.appointment.customer = :cust ORDER BY f.submissionDate DESC", Feedback.class)
             .setParameter("cust", customer)
             .getResultList();
     }

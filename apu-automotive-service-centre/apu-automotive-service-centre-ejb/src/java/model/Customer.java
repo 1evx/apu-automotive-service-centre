@@ -7,6 +7,7 @@ package model;
 import java.io.Serializable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  *
@@ -14,6 +15,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("CUSTOMER") 
+@Table(name = "CUSTOMER", schema = "APP")
 public class Customer extends SystemUser implements Serializable {
 
     private int loyaltyPoints;
@@ -25,9 +27,9 @@ public class Customer extends SystemUser implements Serializable {
     }
 
     // 2. Full Constructor (This is what you will use in your Registration Servlet!)
-    public Customer(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber) {
+    public Customer(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber, String address) {
         // 'super' takes these variables and sends them up to the SystemUser class to be saved!
-        super(username, email, passwordHash, name, phoneNumber, icNumber);
+        super(username, email, passwordHash, name, phoneNumber, icNumber, address);
         
         // Then we set the specific Customer variable
         this.loyaltyPoints = 0; 
@@ -41,4 +43,5 @@ public class Customer extends SystemUser implements Serializable {
     public void setLoyaltyPoints(int loyaltyPoints) {
         this.loyaltyPoints = loyaltyPoints;
     }
+    
 }

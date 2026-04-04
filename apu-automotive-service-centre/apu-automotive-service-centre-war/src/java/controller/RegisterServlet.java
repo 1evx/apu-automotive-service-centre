@@ -31,16 +31,16 @@ public class RegisterServlet extends HttpServlet {
             // 1. Grab all form data
             String email = request.getParameter("email");
             String password = request.getParameter("password");
-            String phone = request.getParameter("phone");
+            String phoneNumber = request.getParameter("phone");
             String username = request.getParameter("username"); 
-            String icNumber = request.getParameter("icNumber"); 
-            
-            // THE FIX 1: Grab the fullName from your HTML form!
             String fullName = request.getParameter("fullName"); 
+            String icNumber = request.getParameter("icNumber"); 
+            String address = request.getParameter("address");
+            
 
             // 2. Check if email exists
             if (systemUserFacade.emailExists(email)) {
-                request.getSession().setAttribute("popupMessage", "Registration Failed: That email is already in use!");
+                request.getSession().setAttribute("popupMessage", "Registration Failed: That email is already in userc!");
                 request.getSession().setAttribute("popupType", "error");
                 response.sendRedirect("register.jsp");
                 return; 
@@ -48,7 +48,7 @@ public class RegisterServlet extends HttpServlet {
 
             // 3. Create the Customer
             // THE FIX 2: Pass 'fullName' into the constructor instead of the undefined 'name'
-            Customer newCustomer = new Customer(username, email, password, fullName, phone, icNumber);
+            Customer newCustomer = new Customer(username, email, password, fullName, phoneNumber, icNumber, address);
 
             // 4. Save to database 
             try {

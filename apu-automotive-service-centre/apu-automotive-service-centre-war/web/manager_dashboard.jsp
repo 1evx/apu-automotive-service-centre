@@ -5,7 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="model.User"%>
+<%@page import="model.SystemUser"%>
 <%@page import="model.Manager"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -544,14 +544,14 @@
                                                                                 title="Edit Staff" 
                                                                                 data-bs-toggle="modal" 
                                                                                 data-bs-target="#editStaffModal"
-                                                                                data-id="${staff.id}"
+                                                                                data-id="${staff.userId}"
                                                                                 data-name="${staff.fullName}"
                                                                                 data-email="${staff.email}"
                                                                                 data-role="${staff.class.simpleName}">
                                                                             <i class="fa-solid fa-pen"></i>
                                                                         </button>
 
-                                                                        <a href="DeleteUserServlet?id=${staff.id}" class="btn btn-sm btn-outline-danger" 
+                                                                        <a href="DeleteUserServlet?id=${staff.userId}" class="btn btn-sm btn-outline-danger" 
                                                                            onclick="return confirm('Are you absolutely sure you want to delete ${staff.fullName}? This cannot be undone.');" title="Delete Staff">
                                                                             <i class="fa-solid fa-trash"></i>
                                                                         </a>

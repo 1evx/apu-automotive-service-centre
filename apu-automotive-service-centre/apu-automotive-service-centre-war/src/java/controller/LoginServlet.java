@@ -40,6 +40,8 @@ public class LoginServlet extends HttpServlet {
     @EJB
     private ServiceTypeFacade ServiceTypeFacade;
     
+    @EJB
+    private model.CustomerFacade CustomerFacade;
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -80,7 +82,13 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect("manager_dashboard.jsp");
                     
                 } else if (user instanceof CounterStaff) {
-                    response.sendRedirect("counter_dashboard.jsp");
+                    // Fetch all customers from the database
+                    List<Customer> customerList = CustomerFacade.findAll();
+    
+                    // Save them to the session so the dashboard can print them
+                    session.setAttribute("customerList", customerList);
+                    
+                    response.sendRedirect("counterStaff_dashboard.jsp");
                     
                 } else if (user instanceof Technician) {
                     response.sendRedirect("technician_dashboard.jsp");

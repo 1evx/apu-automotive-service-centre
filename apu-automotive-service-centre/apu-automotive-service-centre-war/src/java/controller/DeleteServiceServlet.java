@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 import model.Manager;
 import model.ServiceType;
 import model.ServiceTypeFacade;
-import model.User;
+import model.SystemUser;
 
 /**
  *
@@ -35,7 +35,7 @@ public class DeleteServiceServlet extends HttpServlet {
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
-        User currentUser = (User) session.getAttribute("currentUser");
+        SystemUser currentUser = (SystemUser) session.getAttribute("currentUser");
         
         // 1. SECURITY CHECK: Managers Only
         if (currentUser == null || !(currentUser instanceof Manager)) {

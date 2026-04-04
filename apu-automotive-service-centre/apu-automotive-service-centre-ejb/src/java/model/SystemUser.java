@@ -12,6 +12,7 @@ import javax.persistence.*;
  * @author Asus
  */
 @Entity
+@Table(name = "MY_USER", schema = "APP")
 // We stick to JOINED because it matches your perfect ERD!
 @Inheritance(strategy = InheritanceType.JOINED)
 // This tells JPA to automatically stamp the child's role into the 'role' column
@@ -39,8 +40,9 @@ public abstract class SystemUser implements Serializable {
     @Column(name = "role", insertable = false, updatable = false)
     private String role;
 
-    private String name;
+    private String fullname;
     private String phoneNumber;
+    private String address;
 
     @Column(unique = true, nullable = false)
     private String icNumber;
@@ -48,13 +50,14 @@ public abstract class SystemUser implements Serializable {
     public SystemUser() {
     }
 
-    public SystemUser(String username, String email, String passwordHash, String name, String phoneNumber, String icNumber) {
+    public SystemUser(String username, String email, String passwordHash, String fullname, String phoneNumber, String icNumber, String address) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
-        this.name = name;
+        this.fullname = fullname;
         this.phoneNumber = phoneNumber;
         this.icNumber = icNumber;
+        this.address = address;
     }
 
     public Long getUserId() {
@@ -94,11 +97,11 @@ public abstract class SystemUser implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return fullname;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.fullname = name;
     }
 
     public String getPhoneNumber() {
@@ -117,6 +120,21 @@ public abstract class SystemUser implements Serializable {
         this.icNumber = icNumber;
     }
 
+    public String getFullName() {
+        return fullname;
+    }
+
+    public void setFullName(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
     
     
 }

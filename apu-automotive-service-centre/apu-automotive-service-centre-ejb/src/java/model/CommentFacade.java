@@ -62,4 +62,26 @@ public class CommentFacade extends AbstractFacade<Comment> {
         }
     }
     
+    @PermitAll
+    public double calculateAverageRatingForTechnician(model.Technician technician) {
+        try {
+            // JPQL: Jump from Comment -> Appointment -> Technician to find the matching records
+            String jpql = "SELECT AVG(c.rating) FROM Comment c WHERE c.appointment.technician = :tech";
+            
+            Double average = (Double) em.createQuery(jpql)
+                                        .setParameter("tech", technician)
+                                        .getSingleResult();
+            
+            // If the technician has comments, format the double to 1 decimal place
+            if (average != null) {
+                return Math.round(average * 10.0) / 10.0; 
+            }
+        } catch (Exception e) {
+            System.out.println("Error calculating average rating: " + e.getMessage());
+        }
+        
+        // Return 0.0 if there are no comments yet or if an error occurs
+        return 0.0; 
+    }
+    
 }

@@ -51,9 +51,18 @@ public class RegisterCustomerServlet extends HttpServlet {
 
             // 4. Save to Database
             customerFacade.create(newCustomer);
+            
+            final String targetEmail = email;
+            final String customerName = fullName;
+            final String tempPass = password;
+            
+            new Thread(() -> {
+                // Ensure you created the utility package and EmailUtility class!
+                utility.EmailUtility.sendCustomerWelcomeEmail(targetEmail, customerName, tempPass);
+            }).start();
 
             // 5. Instantly refresh the customer list in the session so the HTML table updates
-            List<Customer> updatedList = customerFacade.findAll();
+            List<Customer> updatedList = customerFacade.findAllActive();
             session.setAttribute("customerList", updatedList);
 
             // 6. Set the Success Popup

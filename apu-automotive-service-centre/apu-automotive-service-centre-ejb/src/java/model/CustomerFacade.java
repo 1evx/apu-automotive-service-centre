@@ -22,14 +22,14 @@ public class CustomerFacade extends AbstractFacade<Customer> {
         super(Customer.class);
     }
     
-    // ========================================================
-    // CUSTOM DATABASE QUERIES
-    // ========================================================
 
     /**
      * Searches the database for a customer matching the exact email.
      * Useful for checking if an email is already taken during registration!
      */
+    public List<Customer> findAllActive() {
+        return em.createQuery("SELECT c FROM Customer c WHERE c.isActive = true", Customer.class).getResultList();
+    }
     public Customer findByEmail(String email) {
         try {
             TypedQuery<Customer> query = em.createQuery(

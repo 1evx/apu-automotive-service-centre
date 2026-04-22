@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import model.Manager;
+import model.SuperManager;
 import model.SystemUser;
 import model.SystemUserFacade;
 
@@ -36,7 +37,7 @@ public class DeleteStaffServlet extends HttpServlet {
         SystemUser currentUser = (SystemUser) session.getAttribute("currentUser");
         
         // 1. SECURITY CHECK: Managers Only
-        if (currentUser == null || !(currentUser instanceof Manager)) {
+        if (currentUser == null || (!(currentUser instanceof Manager) && !(currentUser instanceof SuperManager))) {
             session.setAttribute("popupMessage", "Security Alert: Only Managers can delete staff.");
             session.setAttribute("popupType", "error");
             response.sendRedirect("login.jsp");

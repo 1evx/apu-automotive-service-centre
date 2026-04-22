@@ -46,7 +46,7 @@ public class EditCustomerServlet extends HttpServlet {
                 customerFacade.edit(customerToUpdate);
 
                 // Refresh the table data in the session
-                List<Customer> updatedList = customerFacade.findAll();
+                List<Customer> updatedList = customerFacade.findAllActive();
                 session.setAttribute("customerList", updatedList);
 
                 session.setAttribute("popupMessage", "Customer updated successfully!");

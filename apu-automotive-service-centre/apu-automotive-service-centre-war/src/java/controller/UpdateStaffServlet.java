@@ -30,7 +30,6 @@ public class UpdateStaffServlet extends HttpServlet {
         HttpSession session = request.getSession();
         SystemUser currentUser = (SystemUser) session.getAttribute("currentUser");
         
-        // 1. UPDATE THE BOUNCER: Allow both Manager and SuperManager in
         if (currentUser == null || (!(currentUser instanceof Manager) && !(currentUser instanceof SuperManager))) {
             session.setAttribute("popupMessage", "Security Alert: Only authorized management can update staff.");
             session.setAttribute("popupType", "error");

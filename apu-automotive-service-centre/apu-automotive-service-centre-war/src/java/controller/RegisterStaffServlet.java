@@ -103,6 +103,15 @@ public class RegisterStaffServlet extends HttpServlet {
 
             // 4. Save the new staff member to the database!
             SystemUserFacade.create(newStaff);
+            
+            final String targetEmail = email;
+            final String targetName = fullName;
+            final String tempPass = password;
+            final String assignedRole = role;
+            
+            new Thread(() -> {
+                utility.EmailUtility.sendStaffWelcomeEmail(targetEmail, targetName, tempPass, assignedRole);
+            }).start();
 
             session.setAttribute("popupMessage", "Success! " + fullName + " has been registered as a " + role + ".");
             session.setAttribute("popupType", "success");

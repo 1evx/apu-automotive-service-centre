@@ -132,7 +132,7 @@
                                                             </div>
                                                             <div class="col-md-3 d-flex align-items-end gap-1">
                                                                 <button class="btn btn-sm btn-outline-secondary w-100" id="resetRevFilter">Reset</button>
-                                                                <button class="btn btn-sm btn-dark btn-print-hide" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
+                                                                <button class="btn btn-sm btn-dark btn-print-hide" onclick="printRevenueChart()"><i class="fa-solid fa-print"></i></button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -140,7 +140,7 @@
 
                                                 <div class="table-responsive mb-4" style="max-height: 250px; overflow-y: auto;">
                                                     <table class="table table-sm table-hover border rounded bg-white" id="revenueTable">
-                                                        <thead class="table-light sticky-top">
+                                                        <thead class="table-light">
                                                             <tr><th>Date</th><th>Customer</th><th class="text-end pe-4">Amount</th></tr>
                                                         </thead>
                                                         <tbody id="revenueTableBody">
@@ -174,7 +174,7 @@
                                                         <p class="small text-muted">Comparison of completed jobs and total revenue contribution.</p>
                                                     </div>
                                                     <div class="col-md-6 text-end">
-                                                        <button class="btn btn-sm btn-outline-primary btn-print-hide" onclick="window.print()">
+                                                        <button class="btn btn-sm btn-outline-primary btn-print-hide" onclick="printStaffChart()">
                                                             <i class="fa-solid fa-download me-1"></i> Export Data
                                                         </button>
                                                     </div>
@@ -346,11 +346,11 @@
                                                 </div>
                                             </div>
 
-                                            <button class="btn btn-primary shadow-sm px-4 py-2 d-flex align-items-center fw-bold transition-all" 
-                                                    data-bs-toggle="modal" data-bs-target="#registerStaffModal"
-                                                    style="border-radius: 10px; font-size: 0.85rem; gap: 8px;">
-                                                <i class="fa-solid fa-plus-circle fs-6"></i> Add New Staff
-                                            </button>
+                                            <a href="register_staff.jsp" 
+                                                class="btn btn-primary shadow-sm px-4 py-2 d-flex align-items-center fw-bold transition-all" 
+                                                style="border-radius: 10px; font-size: 0.85rem; gap: 8px; text-decoration: none;">
+                                                 <i class="fa-solid fa-plus-circle fs-6"></i> Add New Staff
+                                            </a>
                                         </div>
                                     </div>
                                     <div class="card-body p-0">
@@ -666,12 +666,10 @@
                 </div>
             </div>
         </div>
-
-        <jsp:include page="component/staffCreationPopUp.jsp" />
+                                        
         <jsp:include page="component/staffUpdatePopUp.jsp" />
         <jsp:include page="component/serviceCreationPopUp.jsp" />
         <jsp:include page="component/serviceUpdatePopUp.jsp" />
-        <jsp:include page="component/footer.jsp" />
 
         <script src="static/js/jquery-3.7.1.min.js"></script>
         <script src="static/js/bootstrap.bundle.min.js"></script>
@@ -888,7 +886,7 @@
                         });
                     }
                 }
-
+                
                 if(revFilter) revFilter.addEventListener('change', updateRevenueReport);
                 if(revStart) revStart.addEventListener('change', updateRevenueReport);
                 if(revEnd) revEnd.addEventListener('change', updateRevenueReport);
@@ -1116,6 +1114,81 @@
                 // Display the HTML table returned by the Servlet
                 const html = await response.text();
                 resultsDiv.innerHTML = html;
+            }
+            function printRevenueChart() {
+                // 1. Get the Canvas and the Title
+                const canvas = document.getElementById('dailyRevenueChart');
+                const chartTitle = document.getElementById('revChartTitle').innerText;
+
+                if (!canvas) {
+                    alert("Chart not found!");
+                    return;
+                }
+
+                // 2. Convert the Canvas into a high-quality image URL
+                const chartImageURL = canvas.toDataURL('image/png', 1.0);
+
+                // 3. Open a clean, hidden popup window
+                let printWindow = window.open('', '_blank', 'width=900,height=700');
+
+                // 4. Write pure HTML into the new window (Just the title and the image)
+                printWindow.document.write('<html><head><title>Revenue Report</title>');
+                printWindow.document.write('<style>');
+                printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }');
+                printWindow.document.write('h2 { color: #333; margin-bottom: 20px; }');
+                printWindow.document.write('img { max-width: 100%; height: auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); border-radius: 8px; }');
+                printWindow.document.write('</style>');
+                printWindow.document.write('</head><body>');
+                printWindow.document.write('<h2>' + chartTitle + '</h2>');
+                printWindow.document.write('<img src="' + chartImageURL + '" />');
+                printWindow.document.write('</body></html>');
+
+                printWindow.document.close(); // Finish loading the HTML
+
+                // 5. Tell the window to print itself once the image finishes loading
+                printWindow.onload = function() {
+                    printWindow.focus();
+                    printWindow.print();
+                    // Optional: close the popup automatically after printing
+                    // printWindow.close(); 
+                };
+            }
+            
+            function printStaffChart() {
+                // 1. Get the Canvas using your exact ID
+                const canvas = document.getElementById('staffEfficiencyChart');
+                const chartTitle = "Technician Performance Leaderboard";
+
+                if (!canvas) {
+                    alert("Chart not found!");
+                    return;
+                }
+
+                // 2. Convert the Canvas into a high-quality image URL
+                const chartImageURL = canvas.toDataURL('image/png', 1.0);
+
+                // 3. Open a clean, hidden popup window
+                let printWindow = window.open('', '_blank', 'width=900,height=700');
+
+                // 4. Write pure HTML into the new window
+                printWindow.document.write('<html><head><title>Staff Performance Report</title>');
+                printWindow.document.write('<style>');
+                printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }');
+                printWindow.document.write('h2 { color: #333; margin-bottom: 20px; }');
+                printWindow.document.write('img { max-width: 100%; height: auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); border-radius: 8px; }');
+                printWindow.document.write('</style>');
+                printWindow.document.write('</head><body>');
+                printWindow.document.write('<h2>' + chartTitle + '</h2>');
+                printWindow.document.write('<img src="' + chartImageURL + '" />');
+                printWindow.document.write('</body></html>');
+
+                printWindow.document.close(); // Finish loading the HTML
+
+                // 5. Tell the window to print itself once the image finishes loading
+                printWindow.onload = function() {
+                    printWindow.focus();
+                    printWindow.print();
+                };
             }
         </script>
         

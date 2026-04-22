@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import model.Manager;
 import model.ServiceType;
 import model.ServiceTypeFacade;
+import model.SuperManager;
 import model.SystemUser;
 
 /**
@@ -35,7 +36,7 @@ public class DeleteServiceServlet extends HttpServlet {
         HttpSession session = request.getSession();
         SystemUser currentUser = (SystemUser) session.getAttribute("currentUser");
         
-        if (currentUser == null || !(currentUser instanceof Manager)) {
+        if (currentUser == null || (!(currentUser instanceof Manager) && !(currentUser instanceof SuperManager))) {
             session.setAttribute("popupMessage", "Security Alert: Only Managers can delete services.");
             session.setAttribute("popupType", "error");
             response.sendRedirect("login.jsp");

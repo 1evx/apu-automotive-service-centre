@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,15 +28,11 @@ public class TechnicianFacade extends AbstractFacade<Technician> {
         super(Technician.class);
     }
     
-    public model.ServiceType findByServiceName(String name) {
-        try {
-            return (model.ServiceType) getEntityManager().createQuery(
-                "SELECT s FROM ServiceType s WHERE s.serviceName = :name")
-                .setParameter("name", name)
-                .getSingleResult();
-        } catch (javax.persistence.NoResultException e) {
-            return null; // Returns null if the service hasn't been created yet
-        }
+    public List<Technician> findAvailableAndActiveTechnicians() {
+        return em.createQuery(
+            "SELECT t FROM Technician t WHERE t.isActive = true AND t.isAvailable = true", 
+            Technician.class
+        ).getResultList();
     }
     
 }

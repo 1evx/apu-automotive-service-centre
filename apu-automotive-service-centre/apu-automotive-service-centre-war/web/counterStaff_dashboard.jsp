@@ -222,9 +222,9 @@
                                                 <option value="Cancelled">Cancelled</option>
                                                 <option value="Paid">Paid</option>
                                             </select>
-                                            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#bookAppointmentModal">
+                                            <a href="BookAppointmentServlet" class="btn btn-primary fw-bold">
                                                 <i class="fa-solid fa-plus me-2"></i> Book
-                                            </button>
+                                            </a>
                                         </div>                                      
                                     </div>
                                     <div class="card-body p-0">
@@ -290,6 +290,7 @@
                                                                                         data-customer="${appt.customer.fullName}"
                                                                                         data-service="${appt.serviceType.name}"
                                                                                         data-price="${appt.serviceType.price}"
+                                                                                        data-points="${appt.customer.loyaltyPoints}"
                                                                                         title="Process Payment">
                                                                                     <i class="fa-solid fa-cash-register"></i> Checkout
                                                                                 </button>
@@ -405,7 +406,6 @@
         <jsp:include page="component/registerCustomerPopUp.jsp" />
         <jsp:include page="component/editCustomerPopUp.jsp" />
         <jsp:include page="component/editAppointmentModal.jsp" />
-        <jsp:include page="component/bookAppointmentModal.jsp" />
         
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         
@@ -413,11 +413,11 @@
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     Swal.fire({
-                        icon: '${sessionScope.popupType}', // 'success' or 'error'
+                        icon: '${sessionScope.popupType}',
                         title: '${sessionScope.popupType == "error" ? "Action Failed!" : "Success!"}',
                         text: '${sessionScope.popupMessage}',
-                        confirmButtonColor: '#0d6efd', // Matches Bootstrap Primary Blue
-                        timer: ${sessionScope.popupType == "success" ? 3000 : 0}, // Auto-close successes after 3s
+                        confirmButtonColor: '#0d6efd',
+                        timer: ${sessionScope.popupType == "success" ? 3000 : 0},
                         timerProgressBar: ${sessionScope.popupType == "success"}
                     });
                 });
@@ -427,7 +427,6 @@
         </c:if>
             
         <jsp:include page="component/checkoutAppointmentModal.jsp" />
-        <jsp:include page="component/footer.jsp" />
 
         <script src="static/js/jquery-3.7.1.min.js"></script>
         <script src="static/js/bootstrap.bundle.min.js"></script>
@@ -528,13 +527,35 @@
                 const checkoutBtns = document.querySelectorAll('.checkout-btn');
                 checkoutBtns.forEach(btn => {
                     btn.addEventListener('click', function() {
+                        // Grab all data
+                        const price = parseFloat(this.getAttribute('data-price'));
+                        const points = parseInt(this.getAttribute('data-points'));
+
+                        // Fill standard data
                         document.getElementById('checkout-apptId').value = this.getAttribute('data-apptid');
                         document.getElementById('checkout-customerName').innerText = this.getAttribute('data-customer');
                         document.getElementById('checkout-serviceName').innerText = this.getAttribute('data-service');
 
-                        const price = parseFloat(this.getAttribute('data-price')).toFixed(2);
-                        document.getElementById('checkout-priceDisplay').innerText = "RM " + price;
+                        // Set initial price logic
+                        document.getElementById('checkout-originalPrice').value = price;
                         document.getElementById('checkout-priceInput').value = price;
+                        document.getElementById('checkout-priceDisplay').innerText = "RM " + price.toFixed(2);
+
+                        // Set Loyalty Points Logic
+                        document.getElementById('checkout-currentPoints').innerText = points;
+                        document.getElementById('loyaltyPointsBox').style.display = 'block'; // Show the box
+
+                        const checkbox = document.getElementById('usePoints');
+                        checkbox.checked = false; // Reset checkbox
+
+                        // Toggle whether they can click the checkbox based on 100 point rule
+                        if (points >= 100) {
+                            document.getElementById('redeemSwitchContainer').style.display = 'block';
+                            document.getElementById('notEnoughPointsText').style.display = 'none';
+                        } else {
+                            document.getElementById('redeemSwitchContainer').style.display = 'none';
+                            document.getElementById('notEnoughPointsText').style.display = 'block';
+                        }
                     });
                 });
                 
@@ -547,18 +568,23 @@
                         document.getElementById('editAppt-plate').value = this.getAttribute('data-plate');
                         document.getElementById('editAppt-remarks').value = this.getAttribute('data-remarks');
                         document.getElementById('editAppt-status').value = this.getAttribute('data-status');
-
-                        // 1. Set the Date FIRST (because the time generator needs to read it!)
-                        document.getElementById('editAppt-date').value = this.getAttribute('data-date');
-
-                        // 2. THE FIX: Grab the time, then run the generator function to build the options!
+                        
+                        const existingDate = this.getAttribute('data-date');
                         const existingTime = this.getAttribute('data-time');
+
+                        // 2. Build the Date Dropdown AND select the existing date
+                        if (typeof window.populateEditDates === "function") {
+                            window.populateEditDates(existingDate); 
+                        }
+
+                        // 3. Build the Time Dropdown AND select the existing time
                         if (typeof window.updateEditTimeSlots === "function") {
                             window.updateEditTimeSlots(existingTime);
                         }
                     });
                 });
             });
+    
             function printReceipt(receiptId, date, customerName, plateNo, serviceName, method, amount) {
                 // Open a larger, centered popup window
                 const width = 1200;

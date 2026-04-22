@@ -19,7 +19,9 @@
                 <div class="modal-body">
                     <input type="hidden" id="checkout-apptId" name="appointmentId">
                     
-                    <div class="alert alert-light border border-success border-opacity-25 rounded-3 mb-4">
+                    <input type="hidden" id="checkout-originalPrice" name="originalPrice"> 
+                    
+                    <div class="alert alert-light border border-success border-opacity-25 rounded-3 mb-3">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Customer:</span>
                             <span class="fw-bold" id="checkout-customerName"></span>
@@ -32,7 +34,23 @@
                         <div class="d-flex justify-content-between fs-5">
                             <span class="fw-bold text-dark">Total Due:</span>
                             <span class="fw-bold text-success" id="checkout-priceDisplay"></span>
-                            <input type="hidden" id="checkout-priceInput" name="amountPaid">
+                            <input type="hidden" id="checkout-priceInput" name="amountPaid"> 
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info border-info mb-4" id="loyaltyPointsBox" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="small text-muted d-block">Current Points</strong> 
+                                <span class="badge bg-primary" id="checkout-currentPoints"></span>
+                            </div>
+                            
+                            <div id="redeemSwitchContainer" class="d-flex align-items-center gap-2">
+                                <label class="fw-bold text-primary small mb-0">Redeem Pts:</label>
+                                <input type="number" id="pointsToRedeem" name="pointsToRedeem" class="form-control form-control-sm border-primary text-center" 
+                                       style="width: 80px;" value="0" min="0" step="100" onkeyup="applyDiscount()" onchange="applyDiscount()">
+                            </div>
+                            <span id="notEnoughPointsText" class="text-muted small" style="display: none;">Need 100 pts for discount</span>
                         </div>
                     </div>
 
@@ -55,3 +73,40 @@
         </div>
     </div>
 </div>
+
+<script>
+    function applyDiscount() {
+        const originalPrice = parseFloat(document.getElementById('checkout-originalPrice').value);
+        const maxPoints = parseInt(document.getElementById('checkout-currentPoints').innerText);
+        let pointsInput = document.getElementById('pointsToRedeem');
+        let typedPoints = parseInt(pointsInput.value) || 0;
+
+        // SAFETY CHECK 1: Cap at maximum points
+        if (typedPoints > maxPoints) {
+            typedPoints = maxPoints;
+        }
+
+        // SAFETY CHECK 2: Force it into strict blocks of 100! 
+        // (If they type 150, this forces it to 100. If they type 99, it forces it to 0)
+        let validPointsToRedeem = Math.floor(typedPoints / 100) * 100;
+
+        // Optional: Only update the input box value when they click away, so it doesn't interrupt typing
+        if (event && event.type === 'change') {
+            pointsInput.value = validPointsToRedeem; 
+        }
+
+        // MATH: Calculate discount based ONLY on valid 100-point blocks
+        let totalDiscount = (validPointsToRedeem / 100) * 10.00;
+        let newPrice = originalPrice - totalDiscount;
+
+        // SAFETY CHECK 3: Prevent negative prices
+        if (newPrice < 0) {
+            newPrice = 0;
+        }
+
+        // Update the UI
+        document.getElementById('checkout-priceInput').value = newPrice.toFixed(2);
+        document.getElementById('checkout-priceDisplay').innerText = "RM " + newPrice.toFixed(2);
+    }
+</script>
+    

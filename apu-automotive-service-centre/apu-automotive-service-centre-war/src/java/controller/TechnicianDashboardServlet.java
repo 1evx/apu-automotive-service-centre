@@ -35,8 +35,8 @@ public class TechnicianDashboardServlet extends HttpServlet {
 
         Technician tech = (Technician) session.getAttribute("currentUser");
 
-        // Fetch tasks assigned specifically to this technician
         List<Appointment> myTasks = appointmentFacade.findByTechnician(tech);
+        double avgRating = commentFacade.calculateAverageRatingForTechnician(tech);
         
         // Filter comments for this technician's jobs
         List<Comment> myComments = new ArrayList<>();
@@ -49,6 +49,7 @@ public class TechnicianDashboardServlet extends HttpServlet {
 
         request.setAttribute("myTasks", myTasks);
         request.setAttribute("myComments", myComments);
+        request.setAttribute("technicianRating", avgRating);
 
         request.getRequestDispatcher("technician_dashboard.jsp").forward(request, response);
     }

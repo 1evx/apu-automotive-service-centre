@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import model.Manager;
 import model.ServiceType;
 import model.ServiceTypeFacade;
+import model.SuperManager;
 import model.SystemUser;
 
 /**
@@ -35,7 +36,7 @@ public class AddServiceServlet extends HttpServlet {
         HttpSession session = request.getSession();
         SystemUser currentUser = (SystemUser) session.getAttribute("currentUser");
         
-        if (currentUser == null || !(currentUser instanceof Manager)) {
+        if (currentUser == null || (!(currentUser instanceof Manager) && !(currentUser instanceof SuperManager))) {
             session.setAttribute("popupMessage", "Security Alert: Only Managers can add new services.");
             session.setAttribute("popupType", "error");
             response.sendRedirect("login.jsp");
@@ -51,27 +52,36 @@ public class AddServiceServlet extends HttpServlet {
             ServiceType existingService = serviceTypeFacade.findByName(name);
             
             if (existingService != null) {
-                session.setAttribute("popupMessage", "Error: A service named '" + name + "' already exists.");
-                session.setAttribute("popupType", "error");
+                if (existingService.isIsActive()) {
+                    // SCENARIO A: It exists and is currently active. Block the duplicate!
+                    session.setAttribute("popupMessage", "Error: An active service named '" + name + "' already exists on the menu.");
+                    session.setAttribute("popupType", "error");
+                } else {
+                    // SCENARIO B: It exists but was Soft-Deleted. Bring it back to life!
+                    existingService.setIsActive(true); // Reactivate it
+                    existingService.setDescription(description); 
+                    existingService.setPrice(price); // Update to new price
+                    existingService.setDurationHours(durationHours); // Update to new duration
+                    
+                    serviceTypeFacade.edit(existingService); // Save the updated old record
+                    
+                    session.setAttribute("popupMessage", "Success! The archived service '" + name + "' has been reactivated and updated.");
+                    session.setAttribute("popupType", "success");
+                }
+            } else {
+                // SCENARIO C: Brand new service. Create it from scratch.
+                ServiceType newService = new ServiceType();
+                newService.setName(name);
+                newService.setDescription(description); 
+                newService.setPrice(price);
+                newService.setDurationHours(durationHours);
+                newService.setIsActive(true); // Explicitly set it to active
                 
-                // CORRECTED: Redirect to the Dashboard Controller
-                response.sendRedirect("ManagerDashboardServlet#service-pricing");
-                return;
+                serviceTypeFacade.create(newService); // Save to DB
+
+                session.setAttribute("popupMessage", "Success! '" + name + "' was added to the master catalog.");
+                session.setAttribute("popupType", "success");
             }
-
-            ServiceType newService = new ServiceType();
-            newService.setName(name);
-            newService.setDescription(description); 
-            newService.setPrice(price);
-            newService.setDurationHours(durationHours);
-
-            serviceTypeFacade.create(newService);
-
-            // REMOVED: Manual session updates.
-            // The ManagerDashboardServlet will handle fetching the fresh serviceList automatically!
-
-            session.setAttribute("popupMessage", "Success! " + name + " was added to the master catalog.");
-            session.setAttribute("popupType", "success");
             
             // CORRECTED: Redirect to the Dashboard Controller
             response.sendRedirect("ManagerDashboardServlet#service-pricing");

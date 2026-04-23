@@ -47,7 +47,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold small">Date</label>
-                            <input type="date" class="form-control" id="editAppt-date" name="appointmentDate" required>
+                            <select class="form-select" id="editAppt-date" name="appointmentDate" required></select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold small">Time Slot</label>
@@ -83,20 +83,61 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const dateInput = document.getElementById("editAppt-date");
+        const dateDropdown = document.getElementById("editAppt-date");
         const timeDropdown = document.getElementById("editAppt-time");
 
-        // We attach this function directly to the window object so you can call it 
-        // from your main dashboard script when opening the edit modal!
+        // 1. DYNAMIC DATE POPULATOR (Next 5 Days)
+        window.populateEditDates = function(preserveExistingDate = null) {
+            dateDropdown.innerHTML = ''; // Clear old options
+
+            const todayDate = new Date();
+            let dateFound = false;
+
+            // Generate the next 5 days
+            for(let i = 0; i < 5; i++) {
+                let nextDate = new Date(todayDate);
+                nextDate.setDate(todayDate.getDate() + i);
+
+                let yyyy = nextDate.getFullYear();
+                let mm = String(nextDate.getMonth() + 1).padStart(2, '0');
+                let dd = String(nextDate.getDate()).padStart(2, '0');
+                let valueDate = yyyy + "-" + mm + "-" + dd; 
+
+                let displayDate = nextDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                if (i === 0) displayDate = "Today (" + displayDate + ")";
+
+                let option = document.createElement("option");
+                option.value = valueDate;
+                option.text = displayDate;
+
+                // If this generated date matches the appointment's current date, auto-select it!
+                if (preserveExistingDate === valueDate) {
+                    option.selected = true;
+                    dateFound = true;
+                }
+
+                dateDropdown.appendChild(option);
+            }
+
+            // SAFETY FALLBACK: If they are editing an appointment that is NOT in the next 5 days 
+            // (e.g. an older booking), we must add it so the form doesn't break.
+            if (preserveExistingDate && !dateFound) {
+                 let option = document.createElement("option");
+                 option.value = preserveExistingDate;
+                 option.text = preserveExistingDate + " (Original)";
+                 option.selected = true;
+                 dateDropdown.insertBefore(option, dateDropdown.firstChild);
+            }
+        };
+
+        // 2. DYNAMIC TIME POPULATOR (Prevents past times)
         window.updateEditTimeSlots = function(preserveExistingTime = null) {
-            // Clear old time slots
             timeDropdown.innerHTML = '<option value="" disabled selected>-- Select Time --</option>';
-            
-            const selectedDateStr = dateInput.value;
+            const selectedDateStr = dateDropdown.value;
             if (!selectedDateStr) return;
 
             let startHour = 8;  // 8 AM
-            const endHour = 20; // 11 PM
+            const endHour = 20; // 8 PM
 
             const rightNow = new Date();
             let yyyy = rightNow.getFullYear();
@@ -104,14 +145,15 @@
             let dd = String(rightNow.getDate()).padStart(2, '0');
             const exactTodayStr = yyyy + "-" + mm + "-" + dd;
 
-            // If the date picked is exactly today, check the clock
+            // Time Travel Prevention: Check if the selected date is EXACTLY today
             if (selectedDateStr === exactTodayStr) {
                 let currentHour = rightNow.getHours();
                 if (currentHour >= 8) {
-                    startHour = currentHour + 1;
+                    startHour = currentHour + 1; // Restrict to the next available hour
                 }
             }
 
+            // If it's past 8 PM today
             if (startHour > endHour) {
                 let option = document.createElement("option");
                 option.text = "Closed for today";
@@ -121,19 +163,18 @@
                 return; 
             }
 
-            // Build the time strings (e.g., 08:00 AM)
+            // Build the valid time strings
             for (let hour = startHour; hour <= endHour; hour++) {
                 let displayHour = hour % 12 || 12; 
                 let ampm = hour < 12 ? 'AM' : 'PM';
                 let formattedHour = displayHour < 10 ? '0' + displayHour : displayHour;
-                
                 let timeStr = formattedHour + ":00 " + ampm;
 
                 let option = document.createElement("option");
                 option.value = timeStr;
                 option.text = timeStr;
                 
-                // THE TRICK: If an existing time was passed in, auto-select it!
+                // Auto-select the existing time
                 if (preserveExistingTime === timeStr) {
                     option.selected = true;
                 }
@@ -142,9 +183,10 @@
             }
         };
 
-        // Listen for the manager changing the date manually
-        dateInput.addEventListener("change", function() {
-            window.updateEditTimeSlots(); // Don't preserve time if they pick a new date
+        // 3. LISTENERS
+        // When the user picks a new date, re-calculate the available times
+        dateDropdown.addEventListener("change", function() {
+            window.updateEditTimeSlots(); // Do not pass existing time here, force them to pick a new one
         });
     });
 </script>

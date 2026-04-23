@@ -30,7 +30,7 @@ public class AIAssistantServlet extends HttpServlet {
     @EJB
     private SystemUserFacade systemUserFacade;
 
-    private static final String API_KEY = "AIzaSyC3H1yeSq5qz2ecas1hIb0TqBJ9YRDHyng"; 
+    private static final String API_KEY = "AIzaSyB9CKZdNL2yHAa_sJTFyp67EdPbNIenajc"; 
     // Use v1beta for Gemini 2.5 Flash
     private static final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
 
@@ -70,24 +70,21 @@ public class AIAssistantServlet extends HttpServlet {
 
             String generatedSql = callGemini(promptText);
             
-            // THE "FINAL BOSS" CLEANING PATCH
-            // This uses a Regex to find every colon and remove it, plus all other common bugs
             generatedSql = generatedSql
-                .replaceAll("```sql", "")   // Remove markdown
+                .replaceAll("```sql", "")   //remove markdown
                 .replaceAll("```", "")
-                .replace("\\\"", "\"")      // Fix escaped quotes
-                .replace("\\'", "'")        // Fix escaped single quotes
-                .replaceAll(":", "")        // THE FIX: Regex replace for all colons
-                .replace(";", "")           // Remove semicolons
-                .replace("\\n", " ")        // Fix escaped newlines
+                .replace("\\\"", "\"")      //fix escaped quotes
+                .replace("\\'", "'")        //fix escaped single quotes
+                .replaceAll(":", "")        //regex replace for all colons
+                .replace(";", "")           //remove semicolons
+                .replace("\\n", " ")        //fix escaped newlines
                 .trim();
 
-            // ULTIMATE SAFETY: If there's any colon left at the end, chop it off
+            //chop any colon left at the end
             while (generatedSql.endsWith(":")) {
                 generatedSql = generatedSql.substring(0, generatedSql.length() - 1).trim();
             }
 
-            // Print to NetBeans Console so you can see exactly what is being sent to the DB
             System.out.println("DEBUG - Final SQL: [" + generatedSql + "]");
 
             String upperSql = generatedSql.toUpperCase();
@@ -172,7 +169,6 @@ public class AIAssistantServlet extends HttpServlet {
 
         String raw = res.toString();
         
-        // Find where the actual text starts
         String searchStr = "\"text\": \"";
         int start = raw.indexOf(searchStr);
         if (start == -1) {

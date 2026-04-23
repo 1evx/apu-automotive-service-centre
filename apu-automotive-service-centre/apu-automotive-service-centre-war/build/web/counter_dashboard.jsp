@@ -368,8 +368,6 @@
             </div>
         </div>
 
-        <jsp:include page="component/footer.jsp" />
-
         <script src="static/js/jquery-3.7.1.min.js"></script>
         <script src="static/js/bootstrap.bundle.min.js"></script>
         <script src="static/js/main.js"></script>

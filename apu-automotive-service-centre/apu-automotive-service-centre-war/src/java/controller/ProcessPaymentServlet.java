@@ -2,7 +2,6 @@ package controller;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,16 +38,13 @@ public class ProcessPaymentServlet extends HttpServlet {
             Double amountPaid = Double.parseDouble(request.getParameter("amountPaid"));
             String paymentMethod = request.getParameter("paymentMethod");
 
-            // 1. Find the Appointment
             Appointment appt = appointmentFacade.find(apptId);
             
             if (appt != null && !appt.getStatus().equals("Paid" ) && appt.getStatus().equals("Completed")) {
-                
-                // 2. Mark Appointment as Completed (Paid)
+
                 appt.setStatus("Paid");
                 appointmentFacade.edit(appt);
 
-                // 3. Create the Payment Record
                 Payment newPayment = new Payment();
                 newPayment.setAppointment(appt);
                 newPayment.setAmount(amountPaid); 
@@ -56,15 +52,28 @@ public class ProcessPaymentServlet extends HttpServlet {
                 newPayment.setMethod(paymentMethod); 
                 paymentFacade.create(newPayment);
 
-                // 4. BONUS: Reward Customer Loyalty Points (10 pts for every visit!)
                 Customer customer = appt.getCustomer();
-                customer.setLoyaltyPoints(customer.getLoyaltyPoints() + 10);
+                
+                String pointsStr = request.getParameter("pointsToRedeem");
+                int typedPoints = (pointsStr != null && !pointsStr.isEmpty()) ? Integer.parseInt(pointsStr) : 0;
+                
+                int actualPointsToRedeem = (typedPoints / 100) * 100;
+                
+                if (actualPointsToRedeem >= 100 && customer.getLoyaltyPoints() >= actualPointsToRedeem) {
+                    customer.setLoyaltyPoints(customer.getLoyaltyPoints() - actualPointsToRedeem);
+                }
+
+                int pointsEarned = (int) (amountPaid / 10);
+                customer.setLoyaltyPoints(customer.getLoyaltyPoints() + pointsEarned);
+
                 customerFacade.edit(customer);
 
-                // REMOVED: Manual session updates.
-                // The CounterStaffDashboardServlet will load fresh lists automatically!
+                String successMsg = "Payment of RM " + amountPaid + " received! Customer awarded " + pointsEarned + " points.";
+                if (actualPointsToRedeem > 0) {
+                    successMsg = "Payment of RM " + amountPaid + " received! Redeemed " + actualPointsToRedeem + " pts & awarded " + pointsEarned + " new pts.";
+                }
 
-                session.setAttribute("popupMessage", "Payment of RM " + amountPaid + " received! Customer awarded 10 points.");
+                session.setAttribute("popupMessage", successMsg);
                 session.setAttribute("popupType", "success");
             }
 
@@ -74,7 +83,6 @@ public class ProcessPaymentServlet extends HttpServlet {
             session.setAttribute("popupType", "error");
         }
 
-        // CORRECTED: Send them to the Controller to fetch fresh data, then to the Payments tab
         response.sendRedirect("CounterStaffDashboardServlet#manage-payments");
     }
 }

@@ -53,7 +53,7 @@
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade show active" id="pills-list" role="tabpanel">
                                         
-                                        <h4 class="mb-4"><i class="fa-solid fa-clipboard-list text-primary me-2"></i> My Active Tasks</h4>
+                                        <h2 class="mb-4"><i class="fa-solid fa-clipboard-list text-primary me-2"></i> My Active Tasks</h2>
                                         
                                         <div class="row">
                                             <c:set var="activeTaskCount" value="0" />
@@ -127,7 +127,7 @@
                             <div id="task-history" class="dashboard-section" style="display: none;">
                                 <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
                                     <div class="card-header bg-white p-4 d-flex flex-wrap justify-content-between align-items-center border-bottom gap-3">
-                                        <h4 class="widget-title mb-0"><i class="fa-solid fa-clock-rotate-left me-2"></i> Task History</h4>
+                                        <h2 class="widget-title mb-0"><i class="fa-solid fa-clock-rotate-left me-2"></i> Task History</h2>
                                         <div class="d-flex align-items-center gap-3">
                                             
                                             <input type="date" class="form-control shadow-sm" id="historyDateFilter" onchange="filterHistoryTable()" style="width: 160px;" title="Filter by Date">
@@ -335,12 +335,18 @@
                                             <img src="static/img/dishes/dishes2_1.png" alt="thumb">
                                             <div class="circle-shape"><img class="cir36" src="static/img/food-items/circleShape.png" alt="shape"></div>
                                         </div>
-                                        <div class="dishes-content">
+                                        <div class="dishes-content text-center">
                                             <a href="#edit-profile">
-                                                <h3>${sessionScope.currentUser.fullName}</h3>
+                                                <h3 class="mb-1">${sessionScope.currentUser.fullName}</h3>
                                             </a>
-                                            <div class="text mb-4">Technician | ${sessionScope.currentUser.email}</div>
-                                            
+                                            <div class="text-muted small mb-3">Technician | ${sessionScope.currentUser.email}</div>
+
+                                            <div class="mb-4">
+                                                <span class="badge bg-light border border-warning text-dark fs-6 rounded-pill px-3 py-2 shadow-sm">
+                                                    <i class="fa-solid fa-star text-warning me-1"></i> 
+                                                    <span class="fw-bold">${requestScope.technicianRating}</span> / 5.0 Rating
+                                                </span>
+                                            </div>
                                             <a href="#dashboard-home" class="theme-btn style6 sidebar-btn active">
                                                 <i class="fa-solid fa-wrench fa-fw"></i> My Tasks
                                             </a>
@@ -356,7 +362,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

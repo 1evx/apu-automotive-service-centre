@@ -36,7 +36,7 @@ public class DeleteCustomerServlet extends HttpServlet {
                 customerFacade.remove(customerToDelete);
 
                 // Refresh the table data in the session
-                List<Customer> updatedList = customerFacade.findAll();
+                List<Customer> updatedList = customerFacade.findAllActive();
                 session.setAttribute("customerList", updatedList);
 
                 session.setAttribute("popupMessage", customerToDelete.getFullName() + " was deleted successfully.");

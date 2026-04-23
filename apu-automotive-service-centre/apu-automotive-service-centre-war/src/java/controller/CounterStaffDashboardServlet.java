@@ -28,6 +28,7 @@ public class CounterStaffDashboardServlet extends HttpServlet {
     @EJB private ServiceTypeFacade serviceTypeFacade;
     @EJB private PaymentFacade paymentFacade;
     @EJB private SystemUserFacade systemUserFacade;
+    @EJB private TechnicianFacade technicianFacade;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
@@ -37,15 +38,15 @@ public class CounterStaffDashboardServlet extends HttpServlet {
         }
 
         // Filter for available technicians
-        List<Technician> availableTechs = new ArrayList<>();
-        for (SystemUser staff : systemUserFacade.getAllStaff()) {
-            if (staff instanceof Technician && ((Technician) staff).isIsAvailable()) {
-                availableTechs.add((Technician) staff);
-            }
-        }
+//        List<Technician> availableTechs = new ArrayList<>();
+//        for (SystemUser staff : systemUserFacade.getAllStaff()) {
+//            if (staff instanceof Technician && ((Technician) staff).isIsAvailable()) {
+//                availableTechs.add((Technician) staff);
+//            }
+//        }
 
-        request.setAttribute("customerList", customerFacade.findAll());
-        request.setAttribute("technicianList", availableTechs);
+        request.setAttribute("customerList", customerFacade.findAllActive());
+        request.setAttribute("technicianList", technicianFacade.findAvailableAndActiveTechnicians());
         request.setAttribute("serviceList", serviceTypeFacade.findAllActive());
         request.setAttribute("appointmentList", appointmentFacade.findAll());
         request.setAttribute("paymentList", paymentFacade.findAll());

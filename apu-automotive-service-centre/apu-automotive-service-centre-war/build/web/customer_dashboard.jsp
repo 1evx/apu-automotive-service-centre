@@ -29,6 +29,7 @@
         <link rel="stylesheet" href="static/css/swiper-bundle.min.css">
         <link rel="stylesheet" href="static/css/nice-select.css">
         <link rel="stylesheet" href="static/css/main.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     </head>
 
     <body class="bg-color2">
@@ -383,25 +384,29 @@
                                         </div>
                                         <div class="dishes-content text-center">
                                             <h3 class="mb-1">${sessionScope.currentUser.fullName}</h3>
-                                            <div class="text-muted small mb-4">${sessionScope.currentUser.email}</div>
-                                            
-                                            <a href="#edit-profile" class="theme-btn style6 sidebar-btn active">
-                                                <i class="fa-solid fa-user-pen fa-fw"></i> Edit Profile
-                                            </a>
-                                            <a href="#current-appointments" class="theme-btn style6 sidebar-btn">
-                                                <i class="fa-solid fa-location-crosshairs fa-fw"></i> Current Service
-                                            </a>
-                                            <a href="#history" class="theme-btn style6 sidebar-btn">
-                                                <i class="fa-solid fa-file-invoice-dollar fa-fw"></i> Service History
-                                            </a>
-                                            <a href="#feedback" class="theme-btn style6 sidebar-btn">
-                                                <i class="fa-solid fa-clipboard-check fa-fw"></i> Technician Reports
-                                            </a>
-                                            <a href="#comment" class="theme-btn style6 sidebar-btn">
-                                                <i class="fa-solid fa-star fa-fw"></i> My Reviews
-                                            </a>
+                                            <div class="text-muted small mb-3">${sessionScope.currentUser.email}</div>
+                                                <div class="mb-4">
+                                                    <span class="badge bg-warning text-dark fs-6 rounded-pill px-3 py-2 shadow-sm">
+                                                        <i class="fa-solid fa-crown text-danger me-1"></i> ${sessionScope.currentUser.loyaltyPoints} Reward Pts
+                                                    </span>
+                                                </div>
+                                                <a href="#edit-profile" class="theme-btn style6 sidebar-btn active">
+                                                    <i class="fa-solid fa-user-pen fa-fw"></i> Edit Profile
+                                                </a>
+                                                <a href="#current-appointments" class="theme-btn style6 sidebar-btn">
+                                                    <i class="fa-solid fa-location-crosshairs fa-fw"></i> Current Service
+                                                </a>
+                                                <a href="#history" class="theme-btn style6 sidebar-btn">
+                                                    <i class="fa-solid fa-file-invoice-dollar fa-fw"></i> Service History
+                                                </a>
+                                                <a href="#feedback" class="theme-btn style6 sidebar-btn">
+                                                    <i class="fa-solid fa-clipboard-check fa-fw"></i> Technician Reports
+                                                </a>
+                                                <a href="#comment" class="theme-btn style6 sidebar-btn">
+                                                    <i class="fa-solid fa-star fa-fw"></i> My Reviews
+                                                </a>
+                                            </div>                                    
                                         </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -502,8 +507,6 @@
                 </div>
             </div>
         </div>
-
-        <jsp:include page="component/footer.jsp" />
 
         <script src="static/js/jquery-3.7.1.min.js"></script>
         <script src="static/js/bootstrap.bundle.min.js"></script>
@@ -649,76 +652,115 @@
             
             // --- 4. PRINT RECEIPT LOGIC ---
             window.printReceipt = function(receiptId, date, customerName, plateNo, serviceName, method, amount) {
-                const width = 1200;
-                const height = 800;
-                const left = (screen.width / 2) - (width / 2);
-                const top = (screen.height / 2) - (height / 2);
-                const printWindow = window.open('', '_blank', 'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left);
-                
-                const formattedAmount = isNaN(parseFloat(amount)) ? amount : "RM " + parseFloat(amount).toFixed(2);
-                
-                const html = `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>Receipt #REC-` + receiptId + `</title>
-                        <style>
-                            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-                            :root { --primary: #0d6efd; --text-main: #2b2b2b; --text-muted: #6c757d; --border-color: #e9ecef; --bg-color: #f4f7f9; }
-                            body { font-family: 'Inter', -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
-                            .receipt-container { background: #ffffff; width: 100%; max-width: 420px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.08); overflow: hidden; }
-                            .receipt-header { background: var(--primary); color: #ffffff; text-align: center; padding: 35px 20px 25px; }
-                            .receipt-header h2 { margin: 0 0 8px; font-size: 26px; font-weight: 700; letter-spacing: 1px; }
-                            .receipt-header p { margin: 0; font-size: 14px; opacity: 0.9; line-height: 1.5; }
-                            .receipt-body { padding: 35px 30px; }
-                            .info-row { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 15px; }
-                            .info-row .label { color: var(--text-muted); }
-                            .info-row .value { font-weight: 600; text-align: right; }
-                            .divider { border-top: 2px dashed var(--border-color); margin: 25px 0; }
-                            .total-row { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; }
-                            .total-row .label { font-size: 18px; font-weight: 600; color: var(--text-muted); }
-                            .total-row .value { font-size: 24px; font-weight: 700; color: var(--primary); }
-                            .receipt-footer { text-align: center; padding: 25px; background: #f8f9fa; font-size: 14px; color: var(--text-muted); border-top: 1px solid var(--border-color); }
-                            @media print {
-                                body { background: white; padding: 0; display: block; }
-                                .receipt-container { box-shadow: none; max-width: 100%; border-radius: 0; margin: 0 auto; }
-                                .receipt-header { background: transparent; color: black; border-bottom: 3px solid black; padding-top: 0;}
-                                .total-row .value { color: black; }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="receipt-container">
-                            <div class="receipt-header">
-                                <h2>APU CARE</h2>
-                                <p>Automotive Service Centre<br>Kuala Lumpur, Malaysia</p>
+            const formattedAmount = isNaN(parseFloat(amount)) ? amount : "RM " + parseFloat(amount).toFixed(2);
+
+            const receiptElement = document.createElement('div');
+
+            // 1. UPDATED CSS: Swapped fixed widths for 100%, adjusted padding to fit Landscape A5
+            receiptElement.innerHTML = `
+                <style>
+                    .formal-receipt { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 100%; padding: 10px 20px; color: #000; background: #fff; box-sizing: border-box; page-break-inside: avoid; }
+                    .header-section { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 15px; }
+                    .company-info h1 { margin: 0 0 5px 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+                    .company-info p { margin: 3px 0; font-size: 12px; color: #333; }
+                    .receipt-title { text-align: right; }
+                    .receipt-title h2 { margin: 0; font-size: 22px; color: #000; letter-spacing: 2px; }
+                    .receipt-title .r-no { font-size: 14px; font-weight: bold; margin-top: 8px; color: #444; }
+                    .meta-section { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 13px; line-height: 1.5; }
+                    .meta-box { width: 48%; }
+                    .meta-box strong { display: inline-block; width: 120px; }
+                    .items-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                    .items-table th { border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 10px; text-align: left; font-size: 12px; text-transform: uppercase; }
+                    .items-table td { border-bottom: 1px solid #ddd; padding: 12px 10px; font-size: 13px; }
+                    .items-table .amount-col { text-align: right; }
+                    .totals-section { display: flex; justify-content: flex-end; margin-bottom: 25px; }
+                    .totals-box { width: 40%; }
+                    .total-line { display: flex; justify-content: space-between; padding: 6px 10px; font-size: 13px; }
+                    .grand-total { font-weight: bold; font-size: 16px; border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 10px; margin-top: 5px; }
+                    .signature-area { display: flex; justify-content: space-between; margin-top: 35px; margin-bottom: 15px; }
+                    .sig-line { width: 200px; border-top: 1px solid #000; text-align: center; padding-top: 5px; font-size: 12px; }
+                    .footer-section { text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
+                </style>
+
+                <div class="formal-receipt">
+                    <div class="header-section">
+                        <div class="company-info">
+                            <h1>APU CARE</h1>
+                            <p><strong>Automotive Service Centre</strong></p>
+                            <p>123 Technology Park Malaysia, Bukit Jalil</p>
+                            <p>57000 Kuala Lumpur, Malaysia</p>
+                            <p>Tel: +603-1234 5678 | Co. Reg: 202601000000</p>
+                        </div>
+                        <div class="receipt-title">
+                            <h2>OFFICIAL RECEIPT</h2>
+                            <div class="r-no">Receipt No: #REC-` + receiptId + `</div>
+                        </div>
+                    </div>
+
+                    <div class="meta-section">
+                        <div class="meta-box">
+                            <div><strong>Billed To:</strong> ` + customerName + `</div>
+                            <div><strong>Vehicle Plate:</strong> ` + plateNo + `</div>
+                        </div>
+                        <div class="meta-box">
+                            <div><strong>Date:</strong> ` + date + `</div>
+                            <div><strong>Payment Method:</strong> ` + method + `</div>
+                        </div>
+                    </div>
+
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">No.</th>
+                                <th style="width: 60%;">Description of Service</th>
+                                <th class="amount-col" style="width: 30%;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>` + serviceName + `</td>
+                                <td class="amount-col">` + formattedAmount + `</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="totals-section">
+                        <div class="totals-box">
+                            <div class="total-line">
+                                <span>Subtotal</span>
+                                <span>` + formattedAmount + `</span>
                             </div>
-                            <div class="receipt-body">
-                                <div class="info-row"><span class="label">Receipt No</span><span class="value">#REC-` + receiptId + `</span></div>
-                                <div class="info-row"><span class="label">Date</span><span class="value">` + date + `</span></div>
-                                <div class="info-row"><span class="label">Customer</span><span class="value">` + customerName + `</span></div>
-                                <div class="info-row"><span class="label">Vehicle Plate</span><span class="value">` + plateNo + `</span></div>
-                                <div class="divider"></div>
-                                <div class="info-row"><span class="label">Service Performed</span><span class="value">` + serviceName + `</span></div>
-                                <div class="info-row"><span class="label">Payment Method</span><span class="value">` + method + `</span></div>
-                                <div class="divider"></div>
-                                <div class="total-row"><span class="label">TOTAL</span><span class="value">` + formattedAmount + `</span></div>
-                            </div>
-                            <div class="receipt-footer">
-                                <strong>Thank you for choosing us!</strong><br>
-                                Keep this receipt for your records.
+                            <div class="total-line grand-total">
+                                <span>TOTAL PAID</span>
+                                <span>` + formattedAmount + `</span>
                             </div>
                         </div>
-                        <script>
-                            window.onload = function() { setTimeout(function() { window.print(); }, 300); }
-                        <\/script>
-                    </body>
-                    </html>
-                `;
-                printWindow.document.write(html);
-                printWindow.document.close();
+                    </div>
+
+                    <div class="signature-area">
+                        <div class="sig-line">Customer Signature</div>
+                        <div class="sig-line">Authorized Signatory</div>
+                    </div>
+
+                    <div class="footer-section">
+                        <p><strong>Thank you for choosing APU Automotive Service Centre!</strong></p>
+                        <p>This is a computer-generated document. No physical signature is required for validity.</p>
+                    </div>
+                </div>
+            `;
+
+            // 2. UPDATED PDF CONFIG: Changed to A5 Landscape and shrunk the margins
+            const pdfOptions = {
+                margin:       0.2, // Tighter margin so nothing gets cut off
+                filename:     'APU_Care_Receipt_REC-' + receiptId + '.pdf',
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' } // The magic fix!
             };
+
+            html2pdf().set(pdfOptions).from(receiptElement).save();
+        };
         </script>
         
         <c:if test="${not empty sessionScope.popupMessage}">

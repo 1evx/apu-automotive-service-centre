@@ -30,7 +30,7 @@ public class AIAssistantServlet extends HttpServlet {
     @EJB
     private SystemUserFacade systemUserFacade;
 
-    private static final String API_KEY = "AIzaSyB9CKZdNL2yHAa_sJTFyp67EdPbNIenajc"; 
+    private static final String API_KEY = ""; 
     // Use v1beta for Gemini 2.5 Flash
     private static final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
 

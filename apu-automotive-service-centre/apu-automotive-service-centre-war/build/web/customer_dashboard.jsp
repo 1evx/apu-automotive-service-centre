@@ -283,7 +283,7 @@
                             <div id="feedback" class="dashboard-section" style="display: none;">
                                 <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
                                     <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
-                                        <h4 class="widget-title mb-0"><i class="fa-regular fa-comments me-2"></i> Technician Reports</h4>
+                                        <h4 class="widget-title mb-0"><i class="fa-regular fa-comments me-2"></i> Technician Feedbacks</h4>
                                     </div>
                                     <div class="card-body p-4 bg-light">
                                         <c:choose>

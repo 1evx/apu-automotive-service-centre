@@ -267,7 +267,7 @@
                              <div id="comment" class="dashboard-section" style="display: none;">
                                 <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
                                     <div class="card-header bg-white p-4 border-bottom">
-                                        <h4 class="widget-title mb-0"><i class="fa-regular fa-comments me-2"></i> Customer Feedback</h4>
+                                        <h4 class="widget-title mb-0"><i class="fa-regular fa-comments me-2"></i> Customer Comments</h4>
                                         <p class="text-muted small mb-0 mt-1">See what customers are saying about your service.</p>
                                     </div>
                                     
@@ -278,7 +278,7 @@
                                                 <c:when test="${empty requestScope.myComments}">
                                                     <div class="text-center py-5 text-muted">
                                                         <i class="fa-regular fa-comment-dots fa-3x mb-3 opacity-25"></i>
-                                                        <h5>No feedback received yet.</h5>
+                                                        <h5>No comments received yet.</h5>
                                                         <p class="small">When customers review your completed jobs, they will appear here!</p>
                                                     </div>
                                                 </c:when>

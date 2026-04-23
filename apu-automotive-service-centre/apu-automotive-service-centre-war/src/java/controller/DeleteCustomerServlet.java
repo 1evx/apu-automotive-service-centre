@@ -32,14 +32,19 @@ public class DeleteCustomerServlet extends HttpServlet {
             Customer customerToDelete = customerFacade.find(userId);
             
             if (customerToDelete != null) {
-                // Delete them from the database
-                customerFacade.remove(customerToDelete);
+                
+                // ==========================================
+                // SOFT DELETE LOGIC APPLIED HERE
+                // ==========================================
+                customerToDelete.setIsActive(false); // Change to false (Check your exact setter name!)
+                customerFacade.edit(customerToDelete); // Update the database instead of removing!
+                // ==========================================
 
-                // Refresh the table data in the session
+                // Refresh the table data in the session (assuming findAllActive ignores isActive=false)
                 List<Customer> updatedList = customerFacade.findAllActive();
                 session.setAttribute("customerList", updatedList);
 
-                session.setAttribute("popupMessage", customerToDelete.getFullName() + " was deleted successfully.");
+                session.setAttribute("popupMessage", customerToDelete.getFullName() + " was deactivated successfully.");
                 session.setAttribute("popupType", "success");
             } else {
                 session.setAttribute("popupMessage", "Error: Customer not found.");
@@ -48,7 +53,7 @@ public class DeleteCustomerServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("popupMessage", "Cannot delete this customer. They may have active appointments or payments tied to their account.");
+            session.setAttribute("popupMessage", "An error occurred while trying to deactivate this customer account.");
             session.setAttribute("popupType", "error");
         }
 

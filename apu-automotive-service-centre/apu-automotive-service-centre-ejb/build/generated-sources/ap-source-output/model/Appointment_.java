@@ -8,7 +8,7 @@ import model.Customer;
 import model.ServiceType;
 import model.Technician;
 
-@Generated(value="EclipseLink-2.7.12.v20230209-rNA", date="2026-04-23T12:04:58")
+@Generated(value="EclipseLink-2.7.12.v20230209-rNA", date="2026-04-24T13:14:49")
 @StaticMetamodel(Appointment.class)
 public class Appointment_ { 
 

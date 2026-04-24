@@ -79,7 +79,7 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-bold small text-muted">IC / Passport No.</label>
-                                        <input type="text" name="icNumber" class="form-control" placeholder="Without dashes (-)" required>
+                                        <input type="text" name="icNumber" class="form-control" placeholder="With dashes (-)" required>
                                     </div>
                                 </div>
 
@@ -147,7 +147,7 @@
                 const techFields = document.getElementById('technician-fields');
                 const counterFields = document.getElementById('counter-fields'); 
 
-                // Hide all by default
+                //hide all by default
                 managerFields.style.display = 'none';
                 techFields.style.display = 'none';
                 counterFields.style.display = 'none'; 
